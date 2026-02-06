@@ -11,3 +11,11 @@ venv/
 .idea/
 *.log
 .DS_Store
+# Local database (will be created in Lambda /tmp)
+*.db
+*.sqlite
+*.sqlite3
+# Deployment files
+deploy.sh
+packaged.yaml
+dependencies/

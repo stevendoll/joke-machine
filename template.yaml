@@ -1,15 +1,16 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: 'Joke Machine API for AWS deployment'
+Description: 'Joke Machine API with SQLite database for AWS deployment'
 
 Globals:
   Function:
     Timeout: 30
-    MemorySize: 256
-    Runtime: python3.11
+    MemorySize: 512
+    Runtime: python3.13
     Environment:
       Variables:
         PYTHONPATH: /var/task
+        AWS_LAMBDA_FUNCTION_NAME: !Ref AWS::StackName
 
 Resources:
   JokeMachineFunction:
@@ -17,7 +18,7 @@ Resources:
     Properties:
       CodeUri: .
       Handler: lambda_handler.handler
-      Runtime: python3.11
+      Runtime: python3.13
       Architectures:
         - x86_64
       Events:
@@ -28,6 +29,17 @@ Resources:
             Method: ANY
       Policies:
         - CloudWatchLogsFullAccess
+      Layers:
+        - !Ref DependenciesLayer
+
+  DependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: joke-machine-dependencies
+      Description: Dependencies for Joke Machine API
+      ContentUri: dependencies/
+      CompatibleRuntimes:
+        - python3.13
 
 Outputs:
   ApiUrl:

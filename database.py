@@ -10,8 +10,16 @@ import uuid
 class JokeDatabase:
     """SQLite database for persistent joke storage"""
     
-    def __init__(self, db_path: str = "jokes.db"):
-        self.db_path = db_path
+    def __init__(self, db_path: str = None):
+        # Use /tmp for Lambda ephemeral storage, local file for development
+        if db_path is None:
+            if os.environ.get('AWS_LAMBDA_FUNCTION_NAME'):
+                self.db_path = "/tmp/jokes.db"
+            else:
+                self.db_path = "jokes.db"
+        else:
+            self.db_path = db_path
+        
         self._init_database()
         self._seed_sample_data()
     

@@ -1,47 +1,94 @@
 # Joke Machine API
 
-A FastAPI application with POST endpoints for deployment on AWS Lambda using AWS SAM.
+A FastAPI application with SQLite database, UUID primary keys, and comprehensive CRUD operations for jokes.
 
 ## Features
 
-- **POST /joke** - Generate jokes based on type and category
+- **POST /jokes** - Get filtered jokes (replaces /joke)
+- **GET /jokes** - Get all jokes from database
+- **GET /jokes/{joke_id}** - Get specific joke by ID
+- **POST /jokes** - Add new joke to database
+- **PUT /jokes/{joke_id}/rating** - Rate a joke (0-5)
+- **DELETE /jokes/{joke_id}** - Delete a joke
 - **POST /echo** - Generic echo endpoint for testing
 - **GET /health** - Health check endpoint
 - **GET /** - Root endpoint
+- **UUID Primary Keys** - Global uniqueness for jokes
+- **SQLite Database** - Persistent storage with auto-seeding
+- **AWS Powertools** - Logging, tracing, metrics
+- **Docker Support** - Container deployment ready
 
 ## Local Development
 
 ### Prerequisites
-- Python 3.11+
+- Python 3.13+
+- pipenv (recommended) or pip
 - Docker (optional)
 
-### Setup
+### Quick Start with Pipenv Scripts
 
 1. Install dependencies:
 ```bash
-pip install -r requirements.txt
+pipenv install
 ```
 
-2. Run locally:
+2. Run API:
 ```bash
-python main.py
+pipenv run local
 ```
 
-Or using uvicorn directly:
+3. Run tests:
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+pipenv run test
 ```
+
+### Available Pipenv Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pipenv run local` | Start API server with hot reload |
+| `pipenv run test` | Run all tests |
+| `pipenv run test-cov` | Run tests with HTML coverage report |
 
 ### Testing the API
 
-#### POST /joke
+#### Get All Jokes
 ```bash
-curl -X POST "http://localhost:8000/joke" \
-     -H "Content-Type: application/json" \
-     -d '{"type": "tech", "category": "programming"}'
+curl http://localhost:8000/jokes
 ```
 
-#### POST /echo
+#### Get Random Joke
+```bash
+curl -X POST "http://localhost:8000/jokes"
+```
+
+#### Get Programming Jokes
+```bash
+curl -X POST "http://localhost:8000/jokes" \
+     -H "Content-Type: application/json" \
+     -d '{"category": "programming"}'
+```
+
+#### Add New Joke
+```bash
+curl -X POST "http://localhost:8000/jokes" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "setup": "Why do programmers prefer dark mode?",
+       "punchline": "Because light attracts bugs!",
+       "category": "programming",
+       "id": "my_joke_001"
+     }'
+```
+
+#### Rate a Joke
+```bash
+curl -X PUT "http://localhost:8000/jokes/gen_001/rating" \
+     -H "Content-Type: application/json" \
+     -d '{"rating": 4.5}'
+```
+
+#### Echo Endpoint
 ```bash
 curl -X POST "http://localhost:8000/echo" \
      -H "Content-Type: application/json" \

@@ -17,5 +17,10 @@ aws-xray-sdk = "*"
 
 [dev-packages]
 
+[scripts]
+local = "uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+test = "pytest"
+test-cov = "pytest --cov=. --cov-report=html"
+
 [requires]
 python_version = "3.13"
