@@ -93,10 +93,10 @@ class TestJokeModel:
             )
         ]
         
-        response = JokeResponse(jokes=jokes, total=2)
+        response = JokeResponse(jokes=jokes, count=2)
         
         assert len(response.jokes) == 2
-        assert response.total == 2
+        assert response.count == 2
         assert response.jokes[0].setup == "Setup 1"
         assert response.jokes[1].setup == "Setup 2"
 

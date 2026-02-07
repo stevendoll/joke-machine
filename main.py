@@ -70,12 +70,12 @@ def get_jokes(category: Optional[str] = None, count: Optional[int] = None):
                     category_enum = JokeCategory(category)
                     filtered_jokes = [j for j in all_jokes if j.category == category_enum]
                     logger.info(f"Returning {len(filtered_jokes)} filtered jokes")
-                    return JokeResponse(jokes=filtered_jokes, total=len(filtered_jokes))
+                    return JokeResponse(jokes=filtered_jokes, count=len(filtered_jokes))
                 except ValueError:
                     raise HTTPException(status_code=400, detail=f"Invalid category: {category}")
             else:
                 logger.info(f"Returning all {len(all_jokes)} jokes")
-                return JokeResponse(jokes=all_jokes, total=len(all_jokes))
+                return JokeResponse(jokes=all_jokes, count=len(all_jokes))
         
         # Validate count if specified
         if count < 1 or count > 10:
@@ -94,7 +94,7 @@ def get_jokes(category: Optional[str] = None, count: Optional[int] = None):
         
         logger.info(f"Returning {len(jokes)} jokes")
         
-        return JokeResponse(jokes=jokes, total=len(jokes))
+        return JokeResponse(jokes=jokes, count=len(jokes))
         
     except HTTPException:
         raise

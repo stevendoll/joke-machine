@@ -59,7 +59,7 @@ class JokeResponse(BaseModel):
     )
     
     jokes: List[Joke] = Field(..., description="List of jokes returned")
-    total: int = Field(..., description="Total number of jokes returned")
+    count: int = Field(..., description="Number of jokes returned")
 
 
 class JokeDatabase:

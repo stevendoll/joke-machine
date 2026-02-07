@@ -29,9 +29,9 @@ class TestAPI:
         
         data = response.json()
         assert "jokes" in data
-        assert "total" in data
-        assert data["total"] > 0  # Should return all jokes when no count specified
-        assert len(data["jokes"]) == data["total"]
+        assert "count" in data
+        assert data["count"] > 0  # Should return all jokes when no count specified
+        assert len(data["jokes"]) == data["count"]
         
         joke = data["jokes"][0]
         assert "setup" in joke
@@ -55,7 +55,7 @@ class TestAPI:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["total"] == 3
+        assert data["count"] == 3
         assert len(data["jokes"]) == 3
     
     def test_joke_endpoint_invalid_count(self):
@@ -127,9 +127,9 @@ class TestAPI:
         
         data = response.json()
         assert "jokes" in data
-        assert "total" in data
-        assert data["total"] > 0
-        assert len(data["jokes"]) == data["total"]
+        assert "count" in data
+        assert data["count"] > 0
+        assert len(data["jokes"]) == data["count"]
     
     def test_get_jokes_with_query_params(self):
         """Test getting jokes with query parameters"""
@@ -139,8 +139,8 @@ class TestAPI:
         
         data = response.json()
         assert "jokes" in data
-        assert "total" in data
-        assert len(data["jokes"]) == data["total"]  # All jokes
+        assert "count" in data
+        assert len(data["jokes"]) == data["count"]  # All jokes
         
         # Test with category only (should return all jokes in that category)
         response = client.get("/jokes?category=programming")
