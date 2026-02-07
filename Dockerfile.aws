@@ -1,0 +1,18 @@
+# AWS Lambda-compatible container for Joke Machine API
+FROM public.ecr.aws/lambda/python:3.11
+
+# Set working directory
+WORKDIR /var/task
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY main.py lambda_handler.py database.py ./
+COPY models/ ./models/
+
+# Set CMD to your handler
+CMD [ "lambda_handler.handler" ]

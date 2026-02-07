@@ -38,7 +38,7 @@ aws ecr get-login-password --region $REGION | docker login --username AWS --pass
 
 # Build Docker image
 echo "🐳 Building Docker image..."
-docker build -f Dockerfile.lambda -t $REPO_NAME:latest .
+docker build -f Dockerfile.aws -t $REPO_NAME:latest .
 
 # Tag image for ECR
 echo "🏷️  Tagging image for ECR..."
@@ -72,11 +72,7 @@ Resources:
         - CloudWatchLogsFullAccess
       Timeout: 30
       MemorySize: 512
-
-    Metadata:
-      DockerTag: joke-machine-latest
-      DockerContext: .
-      Dockerfile: Dockerfile.lambda
+      ImageUri: $ECR_REGISTRY/$REPO_NAME@sha256:9a1b8fa24b9e595509f9361de9d9705cb3a97a982f82f276dd3a55c9fdb6a1dd
 
 Outputs:
   ApiUrl:
@@ -94,8 +90,7 @@ sam deploy \
     --stack-name joke-machine-container \
     --capabilities CAPABILITY_IAM \
     --region $REGION \
-    --image-repository $ECR_REGISTRY/$REPO_NAME \
-    --image-tag latest
+    --image-repository $ECR_REGISTRY/$REPO_NAME
 
 # Get API URL
 echo "🌐 Getting API URL..."
