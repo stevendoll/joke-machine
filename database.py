@@ -39,8 +39,6 @@ class JokeDatabase:
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS jokes (
                     uuid TEXT PRIMARY KEY,
-                    setup TEXT NOT NULL,
-                    punchline TEXT NOT NULL,
                     category TEXT NOT NULL,
                     rating REAL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -56,43 +54,49 @@ class JokeDatabase:
             
             if count == 0:
                 sample_jokes = [
-                    (str(uuid.uuid4()), "Why don't scientists trust atoms?", "Because they make up everything!", "science", None, None),
-                    (str(uuid.uuid4()), "Why did the scarecrow win an award?", "He was outstanding in his field!", "general", None, None),
-                    (str(uuid.uuid4()), "Why don't eggs tell jokes?", "They'd crack each other up!", "food", None, None),
-                    (str(uuid.uuid4()), "What do you call a bear with no teeth?", "A gummy bear!", "general", None, None),
-                    (str(uuid.uuid4()), "Why do programmers prefer dark mode?", "Because light attracts bugs!", "programming", None, None),
-                    (str(uuid.uuid4()), "Why do Java developers wear glasses?", "Because they don't C#!", "programming", None, None),
-                    (str(uuid.uuid4()), "What's a programmer's favorite hangout spot?", "The foo bar!", "programming", None, None),
-                    (str(uuid.uuid4()), "Why do programmers always mix up Halloween and Christmas?", "Because Oct 31 equals Dec 25!", "tech", None, None),
+                    (str(uuid.uuid4()), "science", None, None),
+                    (str(uuid.uuid4()), "general", None, None),
+                    (str(uuid.uuid4()), "food", None, None),
+                    (str(uuid.uuid4()), "general", None, None),
+                    (str(uuid.uuid4()), "programming", None, None),
+                    (str(uuid.uuid4()), "programming", None, None),
+                    (str(uuid.uuid4()), "programming", None, None),
+                    (str(uuid.uuid4()), "tech", None, None),
                 ]
                 
                 conn.executemany('''
-                    INSERT INTO jokes (uuid, setup, punchline, category, rating, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    INSERT INTO jokes (uuid, category, rating, created_at)
+                    VALUES (?, ?, ?, ?)
                 ''', sample_jokes)
                 conn.commit()
     
     def add_joke(self, joke: Joke) -> bool:
         """Add a new joke to the database"""
-        try:
-            with self._get_connection() as conn:
-                # Generate UUID if not provided
-                if not joke.uuid:
-                    joke.uuid = str(uuid.uuid4())
-                
-                # Set created_at if not provided
-                if not joke.created_at:
-                    from datetime import datetime, timezone
-                    joke.created_at = datetime.now(timezone.utc)
-                
-                conn.execute('''
-                    INSERT INTO jokes (uuid, setup, punchline, category, rating, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ''', (joke.uuid, joke.setup, joke.punchline, joke.category.value, joke.rating, joke.created_at))
-                conn.commit()
-                return True
-        except sqlite3.IntegrityError:
-            return False
+        max_attempts = 10
+        for attempt in range(max_attempts):
+            try:
+                with self._get_connection() as conn:
+                    # Generate UUID if not provided
+                    if not joke.uuid:
+                        joke.uuid = str(uuid.uuid4())
+                    
+                    # Set created_at if not provided
+                    if not joke.created_at:
+                        from datetime import datetime, timezone
+                        joke.created_at = datetime.now(timezone.utc)
+                    
+                    conn.execute('''
+                        INSERT INTO jokes (uuid, category, rating, created_at)
+                        VALUES (?, ?, ?, ?)
+                    ''', (joke.uuid, joke.category.value, joke.rating, joke.created_at))
+                    conn.commit()
+                    return True
+            except sqlite3.IntegrityError:
+                # UUID already exists, generate a new one and try again
+                joke.uuid = str(uuid.uuid4())
+                continue
+        
+        return False
     
     def get_joke_by_id(self, joke_id: str) -> Optional[Joke]:
         """Get a specific joke by ID"""
@@ -103,8 +107,6 @@ class JokeDatabase:
             if row:
                 return Joke(
                     uuid=row['uuid'],
-                    setup=row['setup'],
-                    punchline=row['punchline'],
                     category=JokeCategory(row['category']),
                     rating=row['rating'],
                     created_at=row['created_at']
@@ -139,8 +141,6 @@ class JokeDatabase:
             for row in rows:
                 jokes.append(Joke(
                     uuid=row['uuid'],
-                    setup=row['setup'],
-                    punchline=row['punchline'],
                     category=JokeCategory(row['category']),
                     rating=row['rating'],
                     created_at=row['created_at']
@@ -158,8 +158,6 @@ class JokeDatabase:
             for row in rows:
                 jokes.append(Joke(
                     uuid=row['uuid'],
-                    setup=row['setup'],
-                    punchline=row['punchline'],
                     category=JokeCategory(row['category']),
                     rating=row['rating'],
                     created_at=row['created_at']

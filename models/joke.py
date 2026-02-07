@@ -52,8 +52,6 @@ class Joke(BaseModel):
     )
     
     uuid: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), description="UUID primary key for the joke")
-    setup: str = Field(..., description="The setup part of the joke")
-    punchline: str = Field(..., description="The punchline of the joke")
     category: JokeCategory = Field(..., description="The category of the joke")
     rating: Optional[float] = Field(None, ge=0, le=5, description="User rating from 0 to 5")
     created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc), description="Timestamp when joke was created")
@@ -62,8 +60,6 @@ class Joke(BaseModel):
     @classmethod
     def get_default(cls):
         return cls(
-            setup="",
-            punchline="",
             category=JokeCategory.GENERAL,
             rating=None
         )
@@ -110,50 +106,19 @@ class JokeDatabase:
     """In-memory joke database with sample jokes"""
     
     def __init__(self):
-        self._jokes = [
-            Joke(
-                uuid=str(uuid.uuid4()),
-                setup="Why don't scientists trust atoms?",
-                punchline="Because they make up everything!",
-                category=JokeCategory.SCIENCE
-            ),
-            Joke(
-                uuid=str(uuid.uuid4()),
-                setup="Why did the scarecrow win an award?",
-                punchline="He was outstanding in his field!",
-                category=JokeCategory.GENERAL
-            ),
-            Joke(
-                uuid=str(uuid.uuid4()),
-                setup="Why don't eggs tell jokes?",
-                punchline="They'd crack each other up!",
-                category=JokeCategory.FOOD
-            ),
-            Joke(
-                uuid=str(uuid.uuid4()),
-                setup="What do you call a bear with no teeth?",
-                punchline="A gummy bear!",
-                category=JokeCategory.GENERAL
-            ),
-            Joke(
-                uuid=str(uuid.uuid4()),
-                setup="Why do programmers prefer dark mode?",
-                punchline="Because light attracts bugs!",
-                category=JokeCategory.PROGRAMMING
-            ),
-            Joke(
-                uuid=str(uuid.uuid4()),
-                setup="Why do Java developers wear glasses?",
-                punchline="Because they don't C#!",
-                category=JokeCategory.PROGRAMMING
-            ),
-            Joke(
-                uuid=str(uuid.uuid4()),
-                setup="Why do programmers always mix up Halloween and Christmas?",
-                punchline="Because Oct 31 equals Dec 25!",
-                category=JokeCategory.TECH
-            ),
-        ]
+        self._jokes = []
+        # Load jokes from SQLite database
+        self._load_from_sqlite()
+    
+    def _load_from_sqlite(self):
+        """Load jokes from SQLite database"""
+        try:
+            from database import db as sqlite_db
+            sqlite_jokes = sqlite_db.get_all_jokes()
+            self._jokes = sqlite_jokes
+        except Exception:
+            # If SQLite database is not available, use empty list
+            self._jokes = []
     
     def get_jokes(self, category: Optional[JokeCategory] = None, count: int = 1) -> List[Joke]:
         """Get jokes filtered by category"""

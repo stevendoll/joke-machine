@@ -34,10 +34,9 @@ class TestAPI:
         assert len(data["jokes"]) == data["count"]
         
         joke = data["jokes"][0]
-        assert "setup" in joke
-        assert "punchline" in joke
         assert "category" in joke
         assert "uuid" in joke
+        assert "steps" in joke
     
     def test_joke_endpoint_with_category(self):
         """Test the jokes endpoint with specific category"""
@@ -136,8 +135,8 @@ class TestAPI:
         
         data = response.json()
         assert data["uuid"] == joke_uuid
-        assert "setup" in data
-        assert "punchline" in data
+        assert "category" in data
+        assert "steps" in data
     
     def test_get_joke_by_invalid_id(self):
         """Test getting a joke by invalid ID"""
@@ -215,8 +214,6 @@ class TestAPI:
     def test_add_joke(self):
         """Test adding a new joke"""
         new_joke = {
-            "setup": "Why did the developer go broke?",
-            "punchline": "Because he used up all his cache!",
             "category": "programming"
         }
         
@@ -224,16 +221,12 @@ class TestAPI:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["setup"] == new_joke["setup"]
-        assert data["punchline"] == new_joke["punchline"]
         assert data["category"] == new_joke["category"]
         assert "uuid" in data  # Check UUID is returned
     
     def test_add_joke_duplicate(self):
-        """Test adding a duplicate joke (same setup and punchline)"""
+        """Test adding a duplicate joke (same category)"""
         new_joke = {
-            "setup": "Test setup",
-            "punchline": "Test punchline",
             "category": "general"
         }
         
@@ -249,8 +242,7 @@ class TestAPI:
         joke1 = response1.json()
         joke2 = response2.json()
         assert joke1["uuid"] != joke2["uuid"]
-        assert joke1["setup"] == joke2["setup"]
-        assert joke1["punchline"] == joke2["punchline"]
+        assert joke1["category"] == joke2["category"]
     
     def test_rate_joke(self):
         """Test rating a joke"""
@@ -292,8 +284,6 @@ class TestAPI:
         """Test deleting a joke"""
         # First add a joke to delete
         new_joke = {
-            "setup": "Test joke for deletion",
-            "punchline": "This will be deleted",
             "category": "general"
         }
         response = client.post("/jokes", json=new_joke)

@@ -132,7 +132,7 @@ def add_joke(joke: Joke):
         Created joke object
     """
     try:
-        logger.info(f"Adding new joke: {joke.setup[:50]}...")
+        logger.info(f"Adding new joke with category: {joke.category}...")
         
         success = db.add_joke(joke)
         

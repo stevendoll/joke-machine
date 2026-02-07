@@ -8,45 +8,34 @@ class TestJokeModel:
     def test_joke_creation(self):
         """Test creating a valid joke"""
         joke = Joke(
-            setup="Why don't scientists trust atoms?",
-            punchline="Because they make up everything!",
             category=JokeCategory.SCIENCE
         )
         
-        assert joke.setup == "Why don't scientists trust atoms?"
-        assert joke.punchline == "Because they make up everything!"
         assert joke.category == JokeCategory.SCIENCE
-        assert joke.rating is None
         assert joke.uuid is not None
+        assert joke.rating is None
+        assert joke.created_at is not None
     
     def test_joke_with_rating(self):
         """Test creating a joke with rating"""
         joke = Joke(
-            setup="Test setup",
-            punchline="Test punchline",
             category=JokeCategory.GENERAL,
             rating=4.5
         )
         
+        assert joke.category == JokeCategory.GENERAL
         assert joke.rating == 4.5
         assert joke.uuid is not None
-    
-    def test_joke_invalid_rating(self):
-        """Test that invalid ratings raise validation errors"""
-        from pydantic import ValidationError
+        assert joke.created_at is not None
         
         with pytest.raises(ValidationError):
             Joke(
-                setup="Test setup",
-                punchline="Test punchline",
                 category=JokeCategory.GENERAL,
                 rating=6.0,  # Invalid: > 5
             )
         
         with pytest.raises(ValidationError):
             Joke(
-                setup="Test setup",
-                punchline="Test punchline",
                 category=JokeCategory.GENERAL,
                 rating=-1.0,  # Invalid: < 0
             )
@@ -82,13 +71,9 @@ class TestJokeModel:
         """Test joke response creation"""
         jokes = [
             Joke(
-                setup="Setup 1",
-                punchline="Punchline 1",
                 category=JokeCategory.GENERAL
             ),
             Joke(
-                setup="Setup 2",
-                punchline="Punchline 2",
                 category=JokeCategory.TECH
             )
         ]
@@ -97,8 +82,8 @@ class TestJokeModel:
         
         assert len(response.jokes) == 2
         assert response.count == 2
-        assert response.jokes[0].setup == "Setup 1"
-        assert response.jokes[1].setup == "Setup 2"
+        assert response.jokes[0].category == JokeCategory.GENERAL
+        assert response.jokes[1].category == JokeCategory.TECH
 
 
 class TestJokeDatabase:
