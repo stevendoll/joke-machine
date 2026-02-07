@@ -49,22 +49,46 @@ class TestAPI:
         # Programming jokes should have programming category
         assert joke["category"] == "programming"
     
-    def test_joke_endpoint_with_count(self):
-        """Test the jokes endpoint with multiple jokes"""
-        response = client.get("/jokes?count=3")
+    def test_joke_endpoint_with_limit(self):
+        """Test the jokes endpoint with limit parameter"""
+        response = client.get("/jokes?limit=3")
         assert response.status_code == 200
         
         data = response.json()
         assert data["count"] == 3
         assert len(data["jokes"]) == 3
     
-    def test_joke_endpoint_invalid_count(self):
-        """Test the jokes endpoint with invalid count"""
-        response = client.get("/jokes?count=0")
+    def test_joke_endpoint_invalid_limit(self):
+        """Test the jokes endpoint with invalid limit"""
+        response = client.get("/jokes?limit=0")
         assert response.status_code == 400  # Validation error
         
-        response = client.get("/jokes?count=11")
+        response = client.get("/jokes?limit=51")
         assert response.status_code == 400  # Validation error
+    
+    def test_joke_endpoint_offset(self):
+        """Test the jokes endpoint with offset parameter"""
+        # Get first page
+        response1 = client.get("/jokes?limit=2&offset=0")
+        assert response1.status_code == 200
+        
+        # Get second page
+        response2 = client.get("/jokes?limit=2&offset=2")
+        assert response2.status_code == 200
+        
+        # Verify different jokes (if enough jokes exist)
+        jokes1 = response1.json()["jokes"]
+        jokes2 = response2.json()["jokes"]
+        
+        # If we have enough jokes, they should be different
+        if len(jokes1) == 2 and len(jokes2) == 2:
+            assert jokes1[0]["uuid"] != jokes2[0]["uuid"]
+    
+    def test_joke_endpoint_invalid_offset(self):
+        """Test the jokes endpoint with invalid offset"""
+        response = client.get("/jokes?offset=-1")
+        assert response.status_code == 400
+        assert "Offset must be 0 or greater" in response.json()["detail"]
     
     def test_joke_endpoint_invalid_category(self):
         """Test the jokes endpoint with invalid category"""
@@ -103,7 +127,7 @@ class TestAPI:
     def test_get_joke_by_id(self):
         """Test getting a specific joke by ID"""
         # First get a joke to test with
-        response = client.get("/jokes?count=1")
+        response = client.get("/jokes?limit=1")
         assert response.status_code == 200
         joke_uuid = response.json()["jokes"][0]["uuid"]
         
@@ -150,20 +174,27 @@ class TestAPI:
         assert len(data["jokes"]) > 0
         assert all(joke["category"] == "programming" for joke in data["jokes"])
         
-        # Test with count only (should return specified number of random jokes)
-        response = client.get("/jokes?count=3")
+        # Test with limit only (should return specified number of random jokes)
+        response = client.get("/jokes?limit=3")
         assert response.status_code == 200
         
         data = response.json()
         assert len(data["jokes"]) <= 3
         
-        # Test with category and count
-        response = client.get("/jokes?category=general&count=2")
+        # Test with category and limit
+        response = client.get("/jokes?category=general&limit=2")
         assert response.status_code == 200
         
         data = response.json()
         assert len(data["jokes"]) <= 2
         assert all(joke["category"] == "general" for joke in data["jokes"])
+        
+        # Test with limit and offset
+        response = client.get("/jokes?limit=2&offset=1")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["jokes"]) <= 2
     
     def test_get_jokes_invalid_category(self):
         """Test getting jokes with invalid category"""
@@ -171,15 +202,15 @@ class TestAPI:
         assert response.status_code == 400
         assert "Invalid category" in response.json()["detail"]
     
-    def test_get_jokes_invalid_count(self):
-        """Test getting jokes with invalid count"""
-        response = client.get("/jokes?count=0")
+    def test_get_jokes_invalid_limit(self):
+        """Test getting jokes with invalid limit"""
+        response = client.get("/jokes?limit=0")
         assert response.status_code == 400
-        assert "Count must be between 1 and 10" in response.json()["detail"]
+        assert "Limit must be between 1 and 50" in response.json()["detail"]
         
-        response = client.get("/jokes?count=11")
+        response = client.get("/jokes?limit=51")
         assert response.status_code == 400
-        assert "Count must be between 1 and 10" in response.json()["detail"]
+        assert "Limit must be between 1 and 50" in response.json()["detail"]
     
     def test_add_joke(self):
         """Test adding a new joke"""
@@ -240,7 +271,7 @@ class TestAPI:
     def test_rate_joke_invalid_rating(self):
         """Test rating with invalid rating value"""
         # First get a joke to test with
-        response = client.get("/jokes?count=1")
+        response = client.get("/jokes?limit=1")
         assert response.status_code == 200
         joke_uuid = response.json()["jokes"][0]["uuid"]
         

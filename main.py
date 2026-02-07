@@ -56,13 +56,17 @@ def get_joke_by_id(joke_id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.get("/jokes")
-def get_jokes(category: Optional[str] = None, count: Optional[int] = None):
-    """Get jokes from database with optional category filter"""
+def get_jokes(category: Optional[str] = None, limit: Optional[int] = None, offset: int = 0):
+    """Get jokes from database with optional category filter and pagination"""
     try:
-        logger.info(f"Retrieving jokes with category: {category}, count: {count}")
+        # Validate offset first
+        if offset < 0:
+            raise HTTPException(status_code=400, detail="Offset must be 0 or greater")
         
-        # If no count specified, get all jokes
-        if count is None:
+        logger.info(f"Retrieving jokes with category: {category}, limit: {limit}, offset: {offset}")
+        
+        # If no limit specified, get all jokes
+        if limit is None:
             all_jokes = db.get_all_jokes()
             # Filter by category if specified
             if category:
@@ -70,16 +74,20 @@ def get_jokes(category: Optional[str] = None, count: Optional[int] = None):
                     category_enum = JokeCategory(category)
                     filtered_jokes = [j for j in all_jokes if j.category == category_enum]
                     logger.info(f"Returning {len(filtered_jokes)} filtered jokes")
-                    return JokeResponse(jokes=filtered_jokes, count=len(filtered_jokes))
+                    # Apply offset
+                    paginated_jokes = filtered_jokes[offset:] if offset > 0 else filtered_jokes
+                    return JokeResponse(jokes=paginated_jokes, count=len(paginated_jokes))
                 except ValueError:
                     raise HTTPException(status_code=400, detail=f"Invalid category: {category}")
             else:
                 logger.info(f"Returning all {len(all_jokes)} jokes")
-                return JokeResponse(jokes=all_jokes, count=len(all_jokes))
+                # Apply offset
+                paginated_jokes = all_jokes[offset:] if offset > 0 else all_jokes
+                return JokeResponse(jokes=paginated_jokes, count=len(paginated_jokes))
         
-        # Validate count if specified
-        if count < 1 or count > 10:
-            raise HTTPException(status_code=400, detail="Count must be between 1 and 10")
+        # Validate limit if specified
+        if limit < 1 or limit > 50:
+            raise HTTPException(status_code=400, detail="Limit must be between 1 and 50")
         
         # Convert category string to enum if provided
         category_enum = None
@@ -90,11 +98,21 @@ def get_jokes(category: Optional[str] = None, count: Optional[int] = None):
                 raise HTTPException(status_code=400, detail=f"Invalid category: {category}")
         
         # Get jokes from database
-        jokes = db.get_jokes(category=category_enum, count=count)
+        jokes = db.get_jokes(category=category_enum, count=limit)
         
-        logger.info(f"Returning {len(jokes)} jokes")
+        # Apply offset (get more jokes to account for offset)
+        if offset > 0:
+            # Get additional jokes to account for offset
+            additional_jokes = db.get_jokes(category=category_enum, count=offset)
+            all_jokes = additional_jokes + jokes
+            # Apply offset
+            final_jokes = all_jokes[offset:offset + limit]
+        else:
+            final_jokes = jokes
         
-        return JokeResponse(jokes=jokes, count=len(jokes))
+        logger.info(f"Returning {len(final_jokes)} jokes")
+        
+        return JokeResponse(jokes=final_jokes, count=len(final_jokes))
         
     except HTTPException:
         raise
