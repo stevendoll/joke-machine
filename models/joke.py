@@ -3,6 +3,7 @@ from typing import List, Optional, Literal
 from enum import Enum
 import random
 import uuid
+from datetime import datetime, timezone
 
 
 class JokeCategory(str, Enum):
@@ -25,6 +26,7 @@ class Joke(BaseModel):
     punchline: str = Field(..., description="The punchline of the joke")
     category: JokeCategory = Field(..., description="The category of the joke")
     rating: Optional[float] = Field(None, ge=0, le=5, description="User rating from 0 to 5")
+    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc), description="Timestamp when joke was created")
     
     @classmethod
     def get_default(cls):

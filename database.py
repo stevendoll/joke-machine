@@ -56,19 +56,19 @@ class JokeDatabase:
             
             if count == 0:
                 sample_jokes = [
-                    (str(uuid.uuid4()), "Why don't scientists trust atoms?", "Because they make up everything!", "science", None),
-                    (str(uuid.uuid4()), "Why did the scarecrow win an award?", "He was outstanding in his field!", "general", None),
-                    (str(uuid.uuid4()), "Why don't eggs tell jokes?", "They'd crack each other up!", "food", None),
-                    (str(uuid.uuid4()), "What do you call a bear with no teeth?", "A gummy bear!", "general", None),
-                    (str(uuid.uuid4()), "Why do programmers prefer dark mode?", "Because light attracts bugs!", "programming", None),
-                    (str(uuid.uuid4()), "Why do Java developers wear glasses?", "Because they don't C#!", "programming", None),
-                    (str(uuid.uuid4()), "What's a programmer's favorite hangout spot?", "The foo bar!", "programming", None),
-                    (str(uuid.uuid4()), "Why do programmers always mix up Halloween and Christmas?", "Because Oct 31 equals Dec 25!", "tech", None),
+                    (str(uuid.uuid4()), "Why don't scientists trust atoms?", "Because they make up everything!", "science", None, None),
+                    (str(uuid.uuid4()), "Why did the scarecrow win an award?", "He was outstanding in his field!", "general", None, None),
+                    (str(uuid.uuid4()), "Why don't eggs tell jokes?", "They'd crack each other up!", "food", None, None),
+                    (str(uuid.uuid4()), "What do you call a bear with no teeth?", "A gummy bear!", "general", None, None),
+                    (str(uuid.uuid4()), "Why do programmers prefer dark mode?", "Because light attracts bugs!", "programming", None, None),
+                    (str(uuid.uuid4()), "Why do Java developers wear glasses?", "Because they don't C#!", "programming", None, None),
+                    (str(uuid.uuid4()), "What's a programmer's favorite hangout spot?", "The foo bar!", "programming", None, None),
+                    (str(uuid.uuid4()), "Why do programmers always mix up Halloween and Christmas?", "Because Oct 31 equals Dec 25!", "tech", None, None),
                 ]
                 
                 conn.executemany('''
-                    INSERT INTO jokes (uuid, setup, punchline, category, rating)
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO jokes (uuid, setup, punchline, category, rating, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
                 ''', sample_jokes)
                 conn.commit()
     
@@ -80,10 +80,15 @@ class JokeDatabase:
                 if not joke.uuid:
                     joke.uuid = str(uuid.uuid4())
                 
+                # Set created_at if not provided
+                if not joke.created_at:
+                    from datetime import datetime, timezone
+                    joke.created_at = datetime.now(timezone.utc)
+                
                 conn.execute('''
-                    INSERT INTO jokes (uuid, setup, punchline, category, rating)
-                    VALUES (?, ?, ?, ?, ?)
-                ''', (joke.uuid, joke.setup, joke.punchline, joke.category.value, joke.rating))
+                    INSERT INTO jokes (uuid, setup, punchline, category, rating, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (joke.uuid, joke.setup, joke.punchline, joke.category.value, joke.rating, joke.created_at))
                 conn.commit()
                 return True
         except sqlite3.IntegrityError:
@@ -101,7 +106,8 @@ class JokeDatabase:
                     setup=row['setup'],
                     punchline=row['punchline'],
                     category=JokeCategory(row['category']),
-                    rating=row['rating']
+                    rating=row['rating'],
+                    created_at=row['created_at']
                 )
             return None
     
@@ -136,7 +142,8 @@ class JokeDatabase:
                     setup=row['setup'],
                     punchline=row['punchline'],
                     category=JokeCategory(row['category']),
-                    rating=row['rating']
+                    rating=row['rating'],
+                    created_at=row['created_at']
                 ))
             
             return jokes
@@ -154,7 +161,8 @@ class JokeDatabase:
                     setup=row['setup'],
                     punchline=row['punchline'],
                     category=JokeCategory(row['category']),
-                    rating=row['rating']
+                    rating=row['rating'],
+                    created_at=row['created_at']
                 ))
             
             return jokes
