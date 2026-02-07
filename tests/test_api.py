@@ -2,7 +2,6 @@ import pytest
 import uuid
 from fastapi.testclient import TestClient
 from main import app
-from models.joke import JokeCategory
 
 
 client = TestClient(app)
@@ -25,14 +24,14 @@ class TestAPI:
     
     def test_joke_endpoint_default(self):
         """Test the jokes endpoint with default parameters"""
-        response = client.post("/jokes")
+        response = client.get("/jokes")
         assert response.status_code == 200
         
         data = response.json()
         assert "jokes" in data
         assert "total" in data
-        assert data["total"] == 1
-        assert len(data["jokes"]) == 1
+        assert data["total"] == 10  # Default count is now 10
+        assert len(data["jokes"]) == 10
         
         joke = data["jokes"][0]
         assert "setup" in joke
@@ -42,7 +41,7 @@ class TestAPI:
     
     def test_joke_endpoint_with_category(self):
         """Test the jokes endpoint with specific category"""
-        response = client.post("/jokes", json={"category": JokeCategory.PROGRAMMING.value})
+        response = client.get("/jokes?category=programming")
         assert response.status_code == 200
         
         data = response.json()
@@ -52,7 +51,7 @@ class TestAPI:
     
     def test_joke_endpoint_with_count(self):
         """Test the jokes endpoint with multiple jokes"""
-        response = client.post("/jokes", json={"count": 3})
+        response = client.get("/jokes?count=3")
         assert response.status_code == 200
         
         data = response.json()
@@ -61,21 +60,16 @@ class TestAPI:
     
     def test_joke_endpoint_invalid_count(self):
         """Test the jokes endpoint with invalid count"""
-        response = client.post("/jokes", json={"count": 0})
-        assert response.status_code == 422  # Validation error
+        response = client.get("/jokes?count=0")
+        assert response.status_code == 400  # Validation error
         
-        response = client.post("/jokes", json={"count": 11})
-        assert response.status_code == 422  # Validation error
-    
-    def test_joke_endpoint_invalid_type(self):
-        """Test the jokes endpoint with invalid type"""
-        response = client.post("/jokes", json={"type": "invalid"})
-        assert response.status_code == 422  # Validation error
+        response = client.get("/jokes?count=11")
+        assert response.status_code == 400  # Validation error
     
     def test_joke_endpoint_invalid_category(self):
         """Test the jokes endpoint with invalid category"""
-        response = client.post("/jokes", json={"category": "invalid"})
-        assert response.status_code == 422  # Validation error
+        response = client.get("/jokes?category=invalid")
+        assert response.status_code == 400  # Validation error
     
     def test_echo_endpoint(self):
         """Test the echo endpoint"""
@@ -97,23 +91,19 @@ class TestAPI:
         assert data["status"] == "echoed"
     
     def test_joke_endpoint_no_json(self):
-        """Test the jokes endpoint without JSON data"""
-        response = client.post("/jokes")
+        """Test the jokes endpoint without parameters (should use defaults)"""
+        response = client.get("/jokes")
         assert response.status_code == 200  # Should use defaults
     
     def test_joke_endpoint_malformed_json(self):
-        """Test the jokes endpoint with malformed JSON"""
-        response = client.post(
-            "/jokes",
-            data="invalid json",
-            headers={"Content-Type": "application/json"}
-        )
-        assert response.status_code == 422
+        """Test the jokes endpoint with malformed JSON (not applicable to GET)"""
+        # This test is not applicable to GET requests, so we skip it
+        pass
     
     def test_get_joke_by_id(self):
         """Test getting a specific joke by ID"""
         # First get a joke to test with
-        response = client.post("/jokes", json={"count": 1})
+        response = client.get("/jokes?count=1")
         assert response.status_code == 200
         joke_uuid = response.json()["jokes"][0]["uuid"]
         
@@ -196,7 +186,7 @@ class TestAPI:
         new_joke = {
             "setup": "Why did the developer go broke?",
             "punchline": "Because he used up all his cache!",
-            "category": JokeCategory.PROGRAMMING.value
+            "category": "programming"
         }
         
         response = client.post("/jokes/add", json=new_joke)
@@ -213,7 +203,7 @@ class TestAPI:
         new_joke = {
             "setup": "Test setup",
             "punchline": "Test punchline",
-            "category": JokeCategory.GENERAL.value
+            "category": "general"
         }
         
         # Add the joke first
@@ -234,7 +224,7 @@ class TestAPI:
     def test_rate_joke(self):
         """Test rating a joke"""
         # First get a joke to rate
-        response = client.post("/jokes", json={"count": 1})
+        response = client.get("/jokes?count=1")
         assert response.status_code == 200
         joke_uuid = response.json()["jokes"][0]["uuid"]
         
@@ -250,7 +240,7 @@ class TestAPI:
     def test_rate_joke_invalid_rating(self):
         """Test rating with invalid rating value"""
         # First get a joke to test with
-        response = client.post("/jokes", json={"count": 1})
+        response = client.get("/jokes?count=1")
         assert response.status_code == 200
         joke_uuid = response.json()["jokes"][0]["uuid"]
         

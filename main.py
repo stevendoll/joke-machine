@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 from database import db
-from models.joke import JokeRequest, JokeResponse, joke_db, JokeCategory, Joke
+from models.joke import JokeResponse, joke_db, JokeCategory, Joke
 
 # Pydantic model for rating requests
 class RatingRequest(BaseModel):
@@ -27,34 +27,6 @@ def root():
 def health_check():
     logger.info("Health endpoint accessed")
     return {"status": "healthy"}
-
-@app.post("/jokes", response_model=JokeResponse)
-def get_jokes(request: JokeRequest = JokeRequest.get_default()):
-    """
-    Generate jokes based on request parameters.
-    
-    Args:
-        request: JokeRequest containing category preferences
-        
-    Returns:
-        JokeResponse with setup, punchline, and category
-    """
-    try:
-        logger.info(f"Received jokes request: category={request.category}, count={request.count}")
-        
-        # Get jokes from database
-        jokes = db.get_jokes(
-            category=request.category,
-            count=request.count
-        )
-        
-        logger.info(f"Returning {len(jokes)} jokes")
-        
-        return JokeResponse(jokes=jokes, total=len(jokes))
-        
-    except Exception as e:
-        logger.error(f"Error processing jokes request: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.post("/echo")
 def echo_endpoint(data: Dict[str, Any]):
