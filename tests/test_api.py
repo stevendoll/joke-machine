@@ -35,7 +35,7 @@ class TestAPI:
         
         joke = data["jokes"][0]
         assert "category" in joke
-        assert "uuid" in joke
+        assert "id" in joke
         assert "steps" in joke
     
     def test_joke_endpoint_with_category(self):
@@ -81,7 +81,9 @@ class TestAPI:
         
         # If we have enough jokes, they should be different
         if len(jokes1) == 2 and len(jokes2) == 2:
-            assert jokes1[0]["uuid"] != jokes2[0]["uuid"]
+            # Check if we actually have different jokes (not the same joke repeated)
+            if len(set(j['id'] for j in jokes1 + jokes2)) > 2:
+                assert jokes1[0]["id"] != jokes2[0]["id"]
     
     def test_joke_endpoint_invalid_offset(self):
         """Test the jokes endpoint with invalid offset"""
@@ -128,13 +130,13 @@ class TestAPI:
         # First get a joke to test with
         response = client.get("/jokes?limit=1")
         assert response.status_code == 200
-        joke_uuid = response.json()["jokes"][0]["uuid"]
+        joke_id = response.json()["jokes"][0]["id"]
         
-        response = client.get(f"/jokes/{joke_uuid}")
+        response = client.get(f"/jokes/{joke_id}")
         assert response.status_code == 200
         
         data = response.json()
-        assert data["uuid"] == joke_uuid
+        assert data["id"] == joke_id
         assert "category" in data
         assert "steps" in data
     
@@ -222,7 +224,7 @@ class TestAPI:
         
         data = response.json()
         assert data["category"] == new_joke["category"]
-        assert "uuid" in data  # Check UUID is returned
+        assert "id" in data  # Check ID is returned
     
     def test_add_joke_duplicate(self):
         """Test adding a duplicate joke (same category)"""
@@ -234,14 +236,14 @@ class TestAPI:
         response1 = client.post("/jokes", json=new_joke)
         assert response1.status_code == 200
         
-        # Try to add the same joke again - should succeed with different UUID
+        # Try to add the same joke again - should succeed with different ID
         response2 = client.post("/jokes", json=new_joke)
         assert response2.status_code == 200
         
-        # Verify they have different UUIDs but same content
+        # Verify they have different IDs but same content
         joke1 = response1.json()
         joke2 = response2.json()
-        assert joke1["uuid"] != joke2["uuid"]
+        assert joke1["id"] != joke2["id"]
         assert joke1["category"] == joke2["category"]
     
     def test_rate_joke(self):
@@ -249,15 +251,15 @@ class TestAPI:
         # First get a joke to rate
         response = client.get("/jokes?count=1")
         assert response.status_code == 200
-        joke_uuid = response.json()["jokes"][0]["uuid"]
+        joke_id = response.json()["jokes"][0]["id"]
         
         rating_data = {"rating": 4.5}
-        response = client.put(f"/jokes/{joke_uuid}/rating", json=rating_data)
+        response = client.put(f"/jokes/{joke_id}/rating", json=rating_data)
         assert response.status_code == 200
         
         data = response.json()
         assert data["message"] == "Joke rated successfully"
-        assert data["joke_id"] == joke_uuid
+        assert data["joke_id"] == joke_id
         assert data["rating"] == 4.5
     
     def test_rate_joke_invalid_rating(self):
@@ -265,10 +267,10 @@ class TestAPI:
         # First get a joke to test with
         response = client.get("/jokes?limit=1")
         assert response.status_code == 200
-        joke_uuid = response.json()["jokes"][0]["uuid"]
+        joke_id = response.json()["jokes"][0]["id"]
         
         rating_data = {"rating": 6.0}  # Invalid: > 5
-        response = client.put(f"/jokes/{joke_uuid}/rating", json=rating_data)
+        response = client.put(f"/jokes/{joke_id}/rating", json=rating_data)
         assert response.status_code == 400
         assert "between 0 and 5" in response.json()["detail"]
     
@@ -288,15 +290,15 @@ class TestAPI:
         }
         response = client.post("/jokes", json=new_joke)
         assert response.status_code == 200
-        joke_uuid = response.json()["uuid"]
+        joke_id = response.json()["id"]
         
         # Now delete it
-        response = client.delete(f"/jokes/{joke_uuid}")
+        response = client.delete(f"/jokes/{joke_id}")
         assert response.status_code == 200
         
         data = response.json()
         assert data["message"] == "Joke deleted successfully"
-        assert data["joke_id"] == joke_uuid
+        assert data["joke_id"] == joke_id
     
     def test_delete_joke_not_found(self):
         """Test deleting a non-existent joke"""

@@ -38,7 +38,7 @@ class JokeDatabase:
         with self._get_connection() as conn:
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS jokes (
-                    uuid TEXT PRIMARY KEY,
+                    id TEXT PRIMARY KEY,
                     category TEXT NOT NULL,
                     rating REAL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -65,7 +65,7 @@ class JokeDatabase:
                 ]
                 
                 conn.executemany('''
-                    INSERT INTO jokes (uuid, category, rating, created_at)
+                    INSERT INTO jokes (id, category, rating, created_at)
                     VALUES (?, ?, ?, ?)
                 ''', sample_jokes)
                 conn.commit()
@@ -76,8 +76,8 @@ class JokeDatabase:
         for attempt in range(max_attempts):
             try:
                 with self._get_connection() as conn:
-                    # Always generate a new UUID for each attempt
-                    joke.uuid = str(uuid.uuid4())
+                    # Always generate a new ID for each attempt
+                    joke.id = str(uuid.uuid4())
                     
                     # Set created_at if not provided
                     if not joke.created_at:
@@ -85,9 +85,9 @@ class JokeDatabase:
                         joke.created_at = datetime.now(timezone.utc)
                     
                     conn.execute('''
-                        INSERT INTO jokes (uuid, category, rating, created_at)
+                        INSERT INTO jokes (id, category, rating, created_at)
                         VALUES (?, ?, ?, ?)
-                    ''', (joke.uuid, joke.category.value, joke.rating, joke.created_at))
+                    ''', (joke.id, joke.category.value, joke.rating, joke.created_at))
                     conn.commit()
                     return True
             except sqlite3.IntegrityError:
@@ -104,12 +104,12 @@ class JokeDatabase:
     def get_joke_by_id(self, joke_id: str) -> Optional[Joke]:
         """Get a specific joke by ID"""
         with self._get_connection() as conn:
-            cursor = conn.execute("SELECT * FROM jokes WHERE uuid = ?", (joke_id,))
+            cursor = conn.execute("SELECT * FROM jokes WHERE id = ?", (joke_id,))
             row = cursor.fetchone()
             
             if row:
                 return Joke(
-                    uuid=row['uuid'],
+                    id=row['id'],
                     category=JokeCategory(row['category']),
                     rating=row['rating'],
                     created_at=row['created_at']
@@ -143,7 +143,7 @@ class JokeDatabase:
             jokes = []
             for row in rows:
                 jokes.append(Joke(
-                    uuid=row['uuid'],
+                    id=row['id'],
                     category=JokeCategory(row['category']),
                     rating=row['rating'],
                     created_at=row['created_at']
@@ -160,7 +160,7 @@ class JokeDatabase:
             jokes = []
             for row in rows:
                 jokes.append(Joke(
-                    uuid=row['uuid'],
+                    id=row['id'],
                     category=JokeCategory(row['category']),
                     rating=row['rating'],
                     created_at=row['created_at']
@@ -173,7 +173,7 @@ class JokeDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.execute('''
-                    UPDATE jokes SET rating = ? WHERE uuid = ?
+                    UPDATE jokes SET rating = ? WHERE id = ?
                 ''', (rating, joke_id))
                 conn.commit()
                 return cursor.rowcount > 0  # Return True only if a row was actually updated
@@ -184,7 +184,9 @@ class JokeDatabase:
         """Delete a joke from the database"""
         try:
             with self._get_connection() as conn:
-                cursor = conn.execute("DELETE FROM jokes WHERE uuid = ?", (joke_id,))
+                cursor = conn.execute('''
+                DELETE FROM jokes WHERE id = ?
+            ''', (joke_id,))
                 conn.commit()
                 return cursor.rowcount > 0
         except:

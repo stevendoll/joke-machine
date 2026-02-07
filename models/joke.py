@@ -21,11 +21,11 @@ class Step(BaseModel):
         extra="forbid"
     )
     
-    uuid: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), description="UUID primary key for the step")
+    id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), description="UUID primary key for the step")
     role: StepRole = Field(..., description="Role of the step in the joke structure")
     order: int = Field(default=1, ge=1, description="Order of the step in the joke sequence")
     content: str = Field(..., description="Content of the step")
-    joke_uuid: Optional[str] = Field(default=None, description="UUID of the parent joke")
+    joke_id: Optional[str] = Field(default=None, description="ID of the parent joke")
     
     @classmethod
     def get_default(cls):
@@ -51,7 +51,7 @@ class Joke(BaseModel):
         extra="forbid"
     )
     
-    uuid: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), description="UUID primary key for the joke")
+    id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), description="UUID primary key for the joke")
     category: JokeCategory = Field(..., description="The category of the joke")
     rating: Optional[float] = Field(None, ge=0, le=5, description="User rating from 0 to 5")
     created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc), description="Timestamp when joke was created")
@@ -117,8 +117,27 @@ class JokeDatabase:
             sqlite_jokes = sqlite_db.get_all_jokes()
             self._jokes = sqlite_jokes
         except Exception:
-            # If SQLite database is not available, use empty list
-            self._jokes = []
+            # If SQLite database is not available, use default jokes
+            self._jokes = [
+                Joke(
+                    id=str(uuid.uuid4()),
+                    category=JokeCategory.SCIENCE,
+                    steps=[
+                        Step(
+                            id=str(uuid.uuid4()),
+                            role=StepRole.SETUP,
+                            order=1,
+                            content="Why don't scientists trust atoms?"
+                        ),
+                        Step(
+                            id=str(uuid.uuid4()),
+                            role=StepRole.PUNCHLINE,
+                            order=2,
+                            content="Because they make up everything!"
+                        )
+                    ]
+                )
+            ]
     
     def get_jokes(self, category: Optional[JokeCategory] = None, count: int = 1) -> List[Joke]:
         """Get jokes filtered by category"""
@@ -141,7 +160,7 @@ class JokeDatabase:
     def get_joke_by_id(self, joke_id: str) -> Optional[Joke]:
         """Get a specific joke by ID"""
         for joke in self._jokes:
-            if joke.uuid == joke_id:
+            if joke.id == joke_id:
                 return joke
         return None
 

@@ -12,7 +12,7 @@ class TestJokeModel:
         )
         
         assert joke.category == JokeCategory.SCIENCE
-        assert joke.uuid is not None
+        assert joke.id is not None
         assert joke.rating is None
         assert joke.created_at is not None
     
@@ -25,7 +25,7 @@ class TestJokeModel:
         
         assert joke.category == JokeCategory.GENERAL
         assert joke.rating == 4.5
-        assert joke.uuid is not None
+        assert joke.id is not None
         assert joke.created_at is not None
         
         with pytest.raises(ValidationError):
@@ -119,21 +119,21 @@ class TestJokeDatabase:
         assert isinstance(all_jokes, list)
         # If there are jokes, they should have valid properties
         for joke in all_jokes:
-            assert hasattr(joke, 'uuid')
+            assert hasattr(joke, 'id')
             assert hasattr(joke, 'category')
             assert hasattr(joke, 'rating')
             assert hasattr(joke, 'created_at')
     
     def test_get_joke_by_id(self):
         """Test getting a joke by ID"""
-        # Get all jokes to find a valid UUID
+        # Get all jokes to find a valid ID
         all_jokes = joke_db.get_all_jokes()
         if all_jokes:
-            joke_id = all_jokes[0].uuid
+            joke_id = all_jokes[0].id
             joke = joke_db.get_joke_by_id(joke_id)
             
             assert joke is not None
-            assert joke.uuid == joke_id
+            assert joke.id == joke_id
     
     def test_get_joke_by_invalid_id(self):
         """Test getting a joke by invalid ID"""
@@ -186,8 +186,8 @@ class TestStepModel:
         assert step.role == StepRole.SETUP
         assert step.order == 1
         assert step.content == "Why don't scientists trust atoms?"
-        assert step.uuid is not None
-        assert step.joke_uuid is None
+        assert step.id is not None
+        assert step.joke_id is None
     
     def test_step_with_all_fields(self):
         """Test creating a step with all fields"""
@@ -195,14 +195,14 @@ class TestStepModel:
             role=StepRole.PUNCHLINE,
             order=2,
             content="Because they make up everything!",
-            joke_uuid="test-joke-uuid"
+            joke_id="test-joke-id"
         )
         
         assert step.role == StepRole.PUNCHLINE
         assert step.order == 2
         assert step.content == "Because they make up everything!"
-        assert step.joke_uuid == "test-joke-uuid"
-        assert step.uuid is not None
+        assert step.joke_id == "test-joke-id"
+        assert step.id is not None
     
     def test_step_default_values(self):
         """Test step default values"""
@@ -211,8 +211,8 @@ class TestStepModel:
         assert step.role == StepRole.SETUP
         assert step.order == 1
         assert step.content == ""
-        assert step.uuid is not None
-        assert step.joke_uuid is None
+        assert step.id is not None
+        assert step.joke_id is None
     
     def test_step_invalid_order(self):
         """Test step with invalid order"""

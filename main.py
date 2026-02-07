@@ -137,11 +137,11 @@ def add_joke(joke: Joke):
         success = db.add_joke(joke)
         
         if success:
-            logger.info(f"Successfully added joke with UUID: {joke.uuid}")
+            logger.info(f"Successfully added joke with ID: {joke.id}")
             return joke.model_dump()
         else:
-            logger.warning(f"Failed to add joke - duplicate UUID: {joke.uuid}")
-            raise HTTPException(status_code=409, detail="Joke with this UUID already exists")
+            logger.warning(f"Failed to add joke - duplicate ID: {joke.id}")
+            raise HTTPException(status_code=409, detail="Joke with this ID already exists")
             
     except HTTPException:
         raise
