@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 from database import db
-from models.joke import JokeRequest, JokeResponse, joke_db, JokeCategory, JokeType, Joke
+from models.joke import JokeRequest, JokeResponse, joke_db, JokeCategory, Joke
 
 # Pydantic model for rating requests
 class RatingRequest(BaseModel):
@@ -34,22 +34,21 @@ def get_jokes(request: JokeRequest = JokeRequest.get_default()):
     Generate jokes based on request parameters.
     
     Args:
-        request: JokeRequest containing type and category preferences
+        request: JokeRequest containing category preferences
         
     Returns:
         JokeResponse with setup, punchline, and category
     """
     try:
-        logger.info(f"Received jokes request: type={request.type}, category={request.category}, count={request.count}")
+        logger.info(f"Received jokes request: category={request.category}, count={request.count}")
         
         # Get jokes from database
         jokes = db.get_jokes(
-            joke_type=request.type,
             category=request.category,
             count=request.count
         )
         
-        logger.info(f"Returning {len(jokes)} jokes from {request.type} type")
+        logger.info(f"Returning {len(jokes)} jokes")
         
         return JokeResponse(jokes=jokes, total=len(jokes))
         
@@ -117,11 +116,11 @@ def add_joke(joke: Joke):
         success = db.add_joke(joke)
         
         if success:
-            logger.info(f"Successfully added joke with ID: {joke.id}")
+            logger.info(f"Successfully added joke with UUID: {joke.uuid}")
             return joke.model_dump()
         else:
-            logger.warning(f"Failed to add joke - duplicate ID: {joke.id}")
-            raise HTTPException(status_code=409, detail="Joke with this ID already exists")
+            logger.warning(f"Failed to add joke - duplicate UUID: {joke.uuid}")
+            raise HTTPException(status_code=409, detail="Joke with this UUID already exists")
             
     except HTTPException:
         raise

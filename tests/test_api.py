@@ -2,7 +2,7 @@ import pytest
 import uuid
 from fastapi.testclient import TestClient
 from main import app
-from models.joke import JokeCategory, JokeType
+from models.joke import JokeCategory
 
 
 client = TestClient(app)
@@ -38,17 +38,7 @@ class TestAPI:
         assert "setup" in joke
         assert "punchline" in joke
         assert "category" in joke
-        assert "id" in joke
-    
-    def test_joke_endpoint_with_type(self):
-        """Test the jokes endpoint with specific type"""
-        response = client.post("/jokes", json={"type": JokeType.TECH.value})
-        assert response.status_code == 200
-        
-        data = response.json()
-        joke = data["jokes"][0]
-        # Tech jokes should have programming or tech category
-        assert joke["category"] in ["programming", "tech"]
+        assert "uuid" in joke
     
     def test_joke_endpoint_with_category(self):
         """Test the jokes endpoint with specific category"""
@@ -57,6 +47,7 @@ class TestAPI:
         
         data = response.json()
         joke = data["jokes"][0]
+        # Programming jokes should have programming category
         assert joke["category"] == "programming"
     
     def test_joke_endpoint_with_count(self):
@@ -121,11 +112,16 @@ class TestAPI:
     
     def test_get_joke_by_id(self):
         """Test getting a specific joke by ID"""
-        response = client.get("/joke/gen_001")
+        # First get a joke to test with
+        response = client.post("/jokes", json={"count": 1})
+        assert response.status_code == 200
+        joke_uuid = response.json()["jokes"][0]["uuid"]
+        
+        response = client.get(f"/joke/{joke_uuid}")
         assert response.status_code == 200
         
         data = response.json()
-        assert data["id"] == "gen_001"
+        assert data["uuid"] == joke_uuid
         assert "setup" in data
         assert "punchline" in data
     
@@ -150,8 +146,7 @@ class TestAPI:
         new_joke = {
             "setup": "Why did the developer go broke?",
             "punchline": "Because he used up all his cache!",
-            "category": JokeCategory.PROGRAMMING.value,
-            "id": f"test_new_{uuid.uuid4().hex[:8]}"  # Use unique ID
+            "category": JokeCategory.PROGRAMMING.value
         }
         
         response = client.post("/jokes/add", json=new_joke)
@@ -161,39 +156,56 @@ class TestAPI:
         assert data["setup"] == new_joke["setup"]
         assert data["punchline"] == new_joke["punchline"]
         assert data["category"] == new_joke["category"]
-        assert data["id"] == new_joke["id"]
         assert "uuid" in data  # Check UUID is returned
     
     def test_add_joke_duplicate(self):
-        """Test adding a duplicate joke"""
+        """Test adding a duplicate joke (same setup and punchline)"""
         new_joke = {
             "setup": "Test setup",
             "punchline": "Test punchline",
-            "category": JokeCategory.GENERAL.value,
-            "id": "gen_001"  # Existing ID
+            "category": JokeCategory.GENERAL.value
         }
         
-        response = client.post("/jokes/add", json=new_joke)
-        assert response.status_code == 409
-        assert "already exists" in response.json()["detail"]
+        # Add the joke first
+        response1 = client.post("/jokes/add", json=new_joke)
+        assert response1.status_code == 200
+        
+        # Try to add the same joke again - should succeed with different UUID
+        response2 = client.post("/jokes/add", json=new_joke)
+        assert response2.status_code == 200
+        
+        # Verify they have different UUIDs but same content
+        joke1 = response1.json()
+        joke2 = response2.json()
+        assert joke1["uuid"] != joke2["uuid"]
+        assert joke1["setup"] == joke2["setup"]
+        assert joke1["punchline"] == joke2["punchline"]
     
     def test_rate_joke(self):
         """Test rating a joke"""
-        rating_data = {"rating": 4.5}
+        # First get a joke to rate
+        response = client.post("/jokes", json={"count": 1})
+        assert response.status_code == 200
+        joke_uuid = response.json()["jokes"][0]["uuid"]
         
-        response = client.put("/jokes/gen_001/rating", json=rating_data)
+        rating_data = {"rating": 4.5}
+        response = client.put(f"/jokes/{joke_uuid}/rating", json=rating_data)
         assert response.status_code == 200
         
         data = response.json()
         assert data["message"] == "Joke rated successfully"
-        assert data["joke_id"] == "gen_001"
+        assert data["joke_id"] == joke_uuid
         assert data["rating"] == 4.5
     
     def test_rate_joke_invalid_rating(self):
         """Test rating with invalid rating value"""
-        rating_data = {"rating": 6.0}  # Invalid: > 5
+        # First get a joke to test with
+        response = client.post("/jokes", json={"count": 1})
+        assert response.status_code == 200
+        joke_uuid = response.json()["jokes"][0]["uuid"]
         
-        response = client.put("/jokes/gen_001/rating", json=rating_data)
+        rating_data = {"rating": 6.0}  # Invalid: > 5
+        response = client.put(f"/jokes/{joke_uuid}/rating", json=rating_data)
         assert response.status_code == 400
         assert "between 0 and 5" in response.json()["detail"]
     
@@ -207,25 +219,23 @@ class TestAPI:
     
     def test_delete_joke(self):
         """Test deleting a joke"""
-        response = client.delete("/jokes/test_delete_001")
-        assert response.status_code == 404  # Should not exist initially
-        
         # First add a joke to delete
         new_joke = {
             "setup": "Test joke for deletion",
             "punchline": "This will be deleted",
-            "category": "general",
-            "id": "test_delete_001"
+            "category": "general"
         }
-        client.post("/jokes/add", json=new_joke)
+        response = client.post("/jokes/add", json=new_joke)
+        assert response.status_code == 200
+        joke_uuid = response.json()["uuid"]
         
         # Now delete it
-        response = client.delete("/jokes/test_delete_001")
+        response = client.delete(f"/jokes/{joke_uuid}")
         assert response.status_code == 200
         
         data = response.json()
         assert data["message"] == "Joke deleted successfully"
-        assert data["joke_id"] == "test_delete_001"
+        assert data["joke_id"] == joke_uuid
     
     def test_delete_joke_not_found(self):
         """Test deleting a non-existent joke"""

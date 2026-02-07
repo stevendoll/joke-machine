@@ -2,7 +2,7 @@ import sqlite3
 import json
 from typing import List, Optional, Dict, Any
 from contextlib import contextmanager
-from models.joke import Joke, JokeCategory, JokeType
+from models.joke import Joke, JokeCategory
 import os
 import random
 import uuid
@@ -39,7 +39,6 @@ class JokeDatabase:
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS jokes (
                     uuid TEXT PRIMARY KEY,
-                    id TEXT UNIQUE,
                     setup TEXT NOT NULL,
                     punchline TEXT NOT NULL,
                     category TEXT NOT NULL,
@@ -57,19 +56,19 @@ class JokeDatabase:
             
             if count == 0:
                 sample_jokes = [
-                    (str(uuid.uuid4()), "gen_001", "Why don't scientists trust atoms?", "Because they make up everything!", "science", None),
-                    (str(uuid.uuid4()), "gen_002", "Why did the scarecrow win an award?", "He was outstanding in his field!", "general", None),
-                    (str(uuid.uuid4()), "gen_003", "Why don't eggs tell jokes?", "They'd crack each other up!", "food", None),
-                    (str(uuid.uuid4()), "gen_004", "What do you call a bear with no teeth?", "A gummy bear!", "general", None),
-                    (str(uuid.uuid4()), "tech_001", "Why do programmers prefer dark mode?", "Because light attracts bugs!", "programming", None),
-                    (str(uuid.uuid4()), "tech_002", "Why do Java developers wear glasses?", "Because they don't C#!", "programming", None),
-                    (str(uuid.uuid4()), "tech_003", "What's a programmer's favorite hangout spot?", "The foo bar!", "programming", None),
-                    (str(uuid.uuid4()), "tech_004", "Why do programmers always mix up Halloween and Christmas?", "Because Oct 31 equals Dec 25!", "tech", None),
+                    (str(uuid.uuid4()), "Why don't scientists trust atoms?", "Because they make up everything!", "science", None),
+                    (str(uuid.uuid4()), "Why did the scarecrow win an award?", "He was outstanding in his field!", "general", None),
+                    (str(uuid.uuid4()), "Why don't eggs tell jokes?", "They'd crack each other up!", "food", None),
+                    (str(uuid.uuid4()), "What do you call a bear with no teeth?", "A gummy bear!", "general", None),
+                    (str(uuid.uuid4()), "Why do programmers prefer dark mode?", "Because light attracts bugs!", "programming", None),
+                    (str(uuid.uuid4()), "Why do Java developers wear glasses?", "Because they don't C#!", "programming", None),
+                    (str(uuid.uuid4()), "What's a programmer's favorite hangout spot?", "The foo bar!", "programming", None),
+                    (str(uuid.uuid4()), "Why do programmers always mix up Halloween and Christmas?", "Because Oct 31 equals Dec 25!", "tech", None),
                 ]
                 
                 conn.executemany('''
-                    INSERT INTO jokes (uuid, id, setup, punchline, category, rating)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    INSERT INTO jokes (uuid, setup, punchline, category, rating)
+                    VALUES (?, ?, ?, ?, ?)
                 ''', sample_jokes)
                 conn.commit()
     
@@ -77,16 +76,14 @@ class JokeDatabase:
         """Add a new joke to the database"""
         try:
             with self._get_connection() as conn:
-                # Generate UUID and ID if not provided
+                # Generate UUID if not provided
                 if not joke.uuid:
                     joke.uuid = str(uuid.uuid4())
-                if not joke.id:
-                    joke.id = f"user_{random.randint(1000, 9999)}"
                 
                 conn.execute('''
-                    INSERT INTO jokes (uuid, id, setup, punchline, category, rating)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ''', (joke.uuid, joke.id, joke.setup, joke.punchline, joke.category.value, joke.rating))
+                    INSERT INTO jokes (uuid, setup, punchline, category, rating)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (joke.uuid, joke.setup, joke.punchline, joke.category.value, joke.rating))
                 conn.commit()
                 return True
         except sqlite3.IntegrityError:
@@ -95,13 +92,12 @@ class JokeDatabase:
     def get_joke_by_id(self, joke_id: str) -> Optional[Joke]:
         """Get a specific joke by ID"""
         with self._get_connection() as conn:
-            cursor = conn.execute("SELECT * FROM jokes WHERE id = ?", (joke_id,))
+            cursor = conn.execute("SELECT * FROM jokes WHERE uuid = ?", (joke_id,))
             row = cursor.fetchone()
             
             if row:
                 return Joke(
                     uuid=row['uuid'],
-                    id=row['id'],
                     setup=row['setup'],
                     punchline=row['punchline'],
                     category=JokeCategory(row['category']),
@@ -109,8 +105,8 @@ class JokeDatabase:
                 )
             return None
     
-    def get_jokes(self, joke_type: Optional[JokeType] = None, category: Optional[JokeCategory] = None, count: int = 10) -> List[Joke]:
-        """Get jokes filtered by type and category"""
+    def get_jokes(self, category: Optional[JokeCategory] = None, count: int = 10) -> List[Joke]:
+        """Get jokes filtered by category"""
         query = "SELECT * FROM jokes"
         params = []
         
@@ -121,18 +117,6 @@ class JokeDatabase:
         if category:
             conditions.append("category = ?")
             params.append(category.value)
-        # If only type is specified (no category), filter by type categories
-        elif joke_type:
-            # Map joke types to categories
-            type_categories = {
-                JokeType.GENERAL: [JokeCategory.GENERAL, JokeCategory.SCIENCE, JokeCategory.FOOD],
-                JokeType.TECH: [JokeCategory.PROGRAMMING, JokeCategory.TECH]
-            }
-            
-            if joke_type in type_categories:
-                category_placeholders = ",".join(["?" for _ in type_categories[joke_type]])
-                conditions.append(f"category IN ({category_placeholders})")
-                params.extend([cat.value for cat in type_categories[joke_type]])
         
         if conditions:
             query += " WHERE " + " AND ".join(conditions)
@@ -149,7 +133,6 @@ class JokeDatabase:
             for row in rows:
                 jokes.append(Joke(
                     uuid=row['uuid'],
-                    id=row['id'],
                     setup=row['setup'],
                     punchline=row['punchline'],
                     category=JokeCategory(row['category']),
@@ -168,7 +151,6 @@ class JokeDatabase:
             for row in rows:
                 jokes.append(Joke(
                     uuid=row['uuid'],
-                    id=row['id'],
                     setup=row['setup'],
                     punchline=row['punchline'],
                     category=JokeCategory(row['category']),
@@ -182,7 +164,7 @@ class JokeDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.execute('''
-                    UPDATE jokes SET rating = ? WHERE id = ?
+                    UPDATE jokes SET rating = ? WHERE uuid = ?
                 ''', (rating, joke_id))
                 conn.commit()
                 return cursor.rowcount > 0  # Return True only if a row was actually updated
@@ -193,7 +175,7 @@ class JokeDatabase:
         """Delete a joke from the database"""
         try:
             with self._get_connection() as conn:
-                cursor = conn.execute("DELETE FROM jokes WHERE id = ?", (joke_id,))
+                cursor = conn.execute("DELETE FROM jokes WHERE uuid = ?", (joke_id,))
                 conn.commit()
                 return cursor.rowcount > 0
         except:
