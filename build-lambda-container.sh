@@ -48,6 +48,9 @@ docker tag $REPO_NAME:latest $ECR_REGISTRY/$REPO_NAME:latest
 echo "📤 Pushing to ECR..."
 docker push $ECR_REGISTRY/$REPO_NAME:latest
 
+# Get the image SHA that was just pushed
+IMAGE_SHA=$(docker inspect --format='{{index .RepoDigests 0}}' $ECR_REGISTRY/$REPO_NAME:latest)
+
 # Update CloudFormation template for container
 echo "📋 Creating container template..."
 cat > template-container.yaml << EOF
@@ -72,7 +75,7 @@ Resources:
         - CloudWatchLogsFullAccess
       Timeout: 30
       MemorySize: 512
-      ImageUri: $ECR_REGISTRY/$REPO_NAME@sha256:3ca55252160504b94cfe022fdee5aa22dbe08c4f187322e627e463e4b1a26a30
+      ImageUri: $IMAGE_SHA
 
 Outputs:
   ApiUrl:
