@@ -76,9 +76,8 @@ class JokeDatabase:
         for attempt in range(max_attempts):
             try:
                 with self._get_connection() as conn:
-                    # Generate UUID if not provided
-                    if not joke.uuid:
-                        joke.uuid = str(uuid.uuid4())
+                    # Always generate a new UUID for each attempt
+                    joke.uuid = str(uuid.uuid4())
                     
                     # Set created_at if not provided
                     if not joke.created_at:
@@ -92,9 +91,13 @@ class JokeDatabase:
                     conn.commit()
                     return True
             except sqlite3.IntegrityError:
-                # UUID already exists, generate a new one and try again
-                joke.uuid = str(uuid.uuid4())
+                # UUID already exists, try again with new UUID
+                if attempt == max_attempts - 1:
+                    # Last attempt failed
+                    return False
                 continue
+            except Exception:
+                return False
         
         return False
     
