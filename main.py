@@ -83,7 +83,7 @@ def get_joke_by_id(joke_id: str):
         logger.error(f"Error getting joke: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@app.get("/jokes")
+@app.get("/jokes/all")
 def get_all_jokes():
     """Get all jokes from database"""
     try:
@@ -97,6 +97,37 @@ def get_all_jokes():
         
     except Exception as e:
         logger.error(f"Error getting all jokes: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.get("/jokes")
+def get_jokes(category: Optional[str] = None, count: int = 10):
+    """Get jokes from database with optional category filter"""
+    try:
+        logger.info(f"Retrieving jokes with category: {category}, count: {count}")
+        
+        # Validate count
+        if count < 1 or count > 10:
+            raise HTTPException(status_code=400, detail="Count must be between 1 and 10")
+        
+        # Convert category string to enum if provided
+        category_enum = None
+        if category:
+            try:
+                category_enum = JokeCategory(category)
+            except ValueError:
+                raise HTTPException(status_code=400, detail=f"Invalid category: {category}")
+        
+        # Get jokes from database
+        jokes = db.get_jokes(category=category_enum, count=count)
+        
+        logger.info(f"Returning {len(jokes)} jokes")
+        
+        return JokeResponse(jokes=jokes, total=len(jokes))
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting jokes: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.post("/jokes/add", response_model=Joke)

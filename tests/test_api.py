@@ -132,7 +132,7 @@ class TestAPI:
     
     def test_get_all_jokes(self):
         """Test getting all jokes"""
-        response = client.get("/jokes")
+        response = client.get("/jokes/all")
         assert response.status_code == 200
         
         data = response.json()
@@ -140,6 +140,56 @@ class TestAPI:
         assert "total" in data
         assert data["total"] > 0
         assert len(data["jokes"]) == data["total"]
+    
+    def test_get_jokes_with_query_params(self):
+        """Test getting jokes with query parameters"""
+        # Test without category (default behavior)
+        response = client.get("/jokes")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert "jokes" in data
+        assert "total" in data
+        assert len(data["jokes"]) <= 10  # Default count
+        
+        # Test with category
+        response = client.get("/jokes?category=programming")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["jokes"]) > 0
+        assert all(joke["category"] == "programming" for joke in data["jokes"])
+        
+        # Test with count
+        response = client.get("/jokes?count=3")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["jokes"]) <= 3
+        
+        # Test with category and count
+        response = client.get("/jokes?category=general&count=2")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["jokes"]) <= 2
+        assert all(joke["category"] == "general" for joke in data["jokes"])
+    
+    def test_get_jokes_invalid_category(self):
+        """Test getting jokes with invalid category"""
+        response = client.get("/jokes?category=invalid")
+        assert response.status_code == 400
+        assert "Invalid category" in response.json()["detail"]
+    
+    def test_get_jokes_invalid_count(self):
+        """Test getting jokes with invalid count"""
+        response = client.get("/jokes?count=0")
+        assert response.status_code == 400
+        assert "Count must be between 1 and 10" in response.json()["detail"]
+        
+        response = client.get("/jokes?count=11")
+        assert response.status_code == 400
+        assert "Count must be between 1 and 10" in response.json()["detail"]
     
     def test_add_joke(self):
         """Test adding a new joke"""
