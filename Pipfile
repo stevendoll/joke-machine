@@ -13,7 +13,6 @@ pytest = "*"
 pytest-asyncio = "*"
 httpx = "*"
 aws-lambda-powertools = "*"
-aws-xray-sdk = "*"
 
 [dev-packages]
 

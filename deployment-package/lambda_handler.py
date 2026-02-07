@@ -1,6 +1,6 @@
 import json
 import os
-from main_minimal import app
+from main import app
 from mangum import Mangum
 
 # Mangum adapter to run FastAPI on AWS Lambda

@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Joke Machine API for AWS deployment
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.11
+    Environment:
+      Variables:
+        PYTHONPATH: /var/task
+Resources:
+  JokeMachineFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://joke-machine-deployment-600775874112/a8f26489f95e7064e40f742ffd08dad4
+      Handler: lambda_handler.handler
+      Runtime: python3.11
+      Architectures:
+      - x86_64
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Policies:
+      - CloudWatchLogsFullAccess
+    Metadata:
+      SamResourceId: JokeMachineFunction
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL for Prod stage
+    Value:
+      Fn::Sub: https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/
+  FunctionName:
+    Description: Lambda Function Name
+    Value:
+      Ref: JokeMachineFunction

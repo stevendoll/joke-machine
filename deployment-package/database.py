@@ -117,12 +117,13 @@ class JokeDatabase:
         # Build WHERE clause
         conditions = []
         
-        # If category is specified, filter by it
+        # If category is specified, always filter by it first
         if category:
             conditions.append("category = ?")
             params.append(category.value)
-        # If only type is specified (no category), filter by type categories
-        elif joke_type:
+        
+        # If type is also specified, add type filtering
+        if joke_type:
             # Map joke types to categories
             type_categories = {
                 JokeType.GENERAL: [JokeCategory.GENERAL, JokeCategory.SCIENCE, JokeCategory.FOOD],
@@ -131,7 +132,10 @@ class JokeDatabase:
             
             if joke_type in type_categories:
                 category_placeholders = ",".join(["?" for _ in type_categories[joke_type]])
-                conditions.append(f"category IN ({category_placeholders})")
+                if conditions:
+                    conditions.append(f"category IN ({category_placeholders})")
+                else:
+                    conditions.append(f"category IN ({category_placeholders})")
                 params.extend([cat.value for cat in type_categories[joke_type]])
         
         if conditions:
@@ -181,11 +185,11 @@ class JokeDatabase:
         """Update the rating of a joke"""
         try:
             with self._get_connection() as conn:
-                cursor = conn.execute('''
+                conn.execute('''
                     UPDATE jokes SET rating = ? WHERE id = ?
                 ''', (rating, joke_id))
                 conn.commit()
-                return cursor.rowcount > 0  # Return True only if a row was actually updated
+                return True
         except:
             return False
     

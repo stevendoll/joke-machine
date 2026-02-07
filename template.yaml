@@ -6,7 +6,7 @@ Globals:
   Function:
     Timeout: 30
     MemorySize: 512
-    Runtime: python3.13
+    Runtime: python3.11
     Environment:
       Variables:
         PYTHONPATH: /var/task
@@ -18,7 +18,7 @@ Resources:
     Properties:
       CodeUri: .
       Handler: lambda_handler.handler
-      Runtime: python3.13
+      Runtime: python3.11
       Architectures:
         - x86_64
       Events:
@@ -39,7 +39,7 @@ Resources:
       Description: Dependencies for Joke Machine API
       ContentUri: dependencies/
       CompatibleRuntimes:
-        - python3.13
+        - python3.11
 
 Outputs:
   ApiUrl:

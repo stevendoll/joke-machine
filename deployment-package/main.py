@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Body
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Dict, Any, Optional
 import json
 import logging
@@ -7,19 +7,13 @@ import os
 
 # Only initialize AWS Powertools when running in Lambda
 if os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
-    from aws_lambda_powertools import Logger, Metrics
+    from aws_lambda_powertools import Logger, Tracer, Metrics
     from aws_lambda_powertools.utilities.typing import LambdaContext
     
-    # Configure AWS Powertools (without Tracer to avoid xray dependency)
+    # Configure AWS Powertools
     logger = Logger(service="joke-machine-api")
+    tracer = Tracer(service="joke-machine-api")
     metrics = Metrics(service="joke-machine-api")
-    
-    # Mock tracer for compatibility
-    class MockTracer:
-        def capture_method(self, func):
-            return func
-    
-    tracer = MockTracer()
 else:
     # Local development - use standard logging
     logging.basicConfig(level=logging.INFO)
@@ -44,10 +38,6 @@ app_logger = logging.getLogger(__name__)
 from database import db
 from models.joke import JokeRequest, JokeResponse, joke_db, JokeCategory, JokeType, Joke
 
-# Pydantic model for rating requests
-class RatingRequest(BaseModel):
-    rating: float = Field(..., description="Rating value")
-
 app = FastAPI(title="Joke Machine API", version="1.0.0")
 
 @app.get("/")
@@ -62,7 +52,7 @@ def root():
 @tracer.capture_method
 @metrics.log_metrics
 def health_check():
-    logger.info("Health endpoint accessed")
+    logger.info("Health check accessed")
     metrics.add_metric(name="HealthCheckCount", value=1)
     return {"status": "healthy"}
 
@@ -165,7 +155,7 @@ def get_all_jokes():
     
     return JokeResponse(jokes=all_jokes, total=len(all_jokes))
 
-@app.post("/jokes/add", response_model=Joke)
+@app.post("/jokes", response_model=Joke)
 @tracer.capture_method
 @metrics.log_metrics
 def add_joke(joke: Joke):
@@ -193,8 +183,6 @@ def add_joke(joke: Joke):
             metrics.add_metric(name="JokeAddErrorCount", value=1)
             raise HTTPException(status_code=409, detail="Joke with this ID already exists")
             
-    except HTTPException:
-        raise
     except Exception as e:
         logger.error(f"Error adding joke: {str(e)}")
         metrics.add_metric(name="JokeAddErrorCount", value=1)
@@ -203,21 +191,18 @@ def add_joke(joke: Joke):
 @app.put("/jokes/{joke_id}/rating")
 @tracer.capture_method
 @metrics.log_metrics
-def rate_joke(joke_id: str, rating_request: RatingRequest):
+def rate_joke(joke_id: str, rating: float):
     """
     Rate a joke
     
     Args:
         joke_id: ID of the joke to rate
-        rating_request: Rating request with rating value
+        rating: Rating value (0-5)
         
     Returns:
         Success message
     """
     try:
-        rating = rating_request.rating
-        
-        # Manual validation for better error messages
         if not (0 <= rating <= 5):
             raise HTTPException(status_code=400, detail="Rating must be between 0 and 5")
         

@@ -22,7 +22,7 @@ fi
 # Build dependencies for Lambda layer
 echo "📦 Building dependencies..."
 mkdir -p dependencies/python
-pip install -r requirements.txt -t dependencies/python/
+pip3 install -r requirements.txt -t dependencies/python/
 
 # Package the application
 echo "📋 Packaging application..."

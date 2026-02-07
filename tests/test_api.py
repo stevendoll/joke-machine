@@ -1,4 +1,5 @@
 import pytest
+import uuid
 from fastapi.testclient import TestClient
 from main import app
 from models.joke import JokeCategory, JokeType
@@ -150,10 +151,10 @@ class TestAPI:
             "setup": "Why did the developer go broke?",
             "punchline": "Because he used up all his cache!",
             "category": JokeCategory.PROGRAMMING.value,
-            "id": "test_new_001"
+            "id": f"test_new_{uuid.uuid4().hex[:8]}"  # Use unique ID
         }
         
-        response = client.post("/jokes", json=new_joke)
+        response = client.post("/jokes/add", json=new_joke)
         assert response.status_code == 200
         
         data = response.json()
@@ -172,7 +173,7 @@ class TestAPI:
             "id": "gen_001"  # Existing ID
         }
         
-        response = client.post("/jokes", json=new_joke)
+        response = client.post("/jokes/add", json=new_joke)
         assert response.status_code == 409
         assert "already exists" in response.json()["detail"]
     
@@ -216,7 +217,7 @@ class TestAPI:
             "category": "general",
             "id": "test_delete_001"
         }
-        client.post("/jokes", json=new_joke)
+        client.post("/jokes/add", json=new_joke)
         
         # Now delete it
         response = client.delete("/jokes/test_delete_001")
