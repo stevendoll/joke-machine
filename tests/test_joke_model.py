@@ -1,6 +1,6 @@
 import pytest
-from models.joke import Joke, JokeRequest, JokeResponse, JokeCategory, joke_db
-
+from models.joke import Joke, Step, StepRole, JokeCategory, JokeResponse, StepResponse, JokeRequest, joke_db
+from pydantic import ValidationError
 
 class TestJokeModel:
     """Test the Joke model and related classes"""
@@ -167,3 +167,85 @@ class TestJokeEnums:
         assert JokeCategory.PROGRAMMING == "programming"
         assert JokeCategory.FOOD == "food"
         assert JokeCategory.TECH == "tech"
+    
+    def test_step_role_values(self):
+        """Test step role enum values"""
+        assert StepRole.SETUP == "setup"
+        assert StepRole.PUNCHLINE == "punchline"
+        assert StepRole.BRIDGE == "bridge"
+        assert StepRole.TOPPER == "topper"
+        assert StepRole.CALLBACK == "callback"
+
+
+class TestStepModel:
+    """Test the Step model"""
+    
+    def test_step_creation(self):
+        """Test creating a valid step"""
+        step = Step(
+            role=StepRole.SETUP,
+            order=1,
+            content="Why don't scientists trust atoms?"
+        )
+        
+        assert step.role == StepRole.SETUP
+        assert step.order == 1
+        assert step.content == "Why don't scientists trust atoms?"
+        assert step.uuid is not None
+        assert step.joke_uuid is None
+    
+    def test_step_with_all_fields(self):
+        """Test creating a step with all fields"""
+        step = Step(
+            role=StepRole.PUNCHLINE,
+            order=2,
+            content="Because they make up everything!",
+            joke_uuid="test-joke-uuid"
+        )
+        
+        assert step.role == StepRole.PUNCHLINE
+        assert step.order == 2
+        assert step.content == "Because they make up everything!"
+        assert step.joke_uuid == "test-joke-uuid"
+        assert step.uuid is not None
+    
+    def test_step_default_values(self):
+        """Test step default values"""
+        step = Step.get_default()
+        
+        assert step.role == StepRole.SETUP
+        assert step.order == 1
+        assert step.content == ""
+        assert step.uuid is not None
+        assert step.joke_uuid is None
+    
+    def test_step_invalid_order(self):
+        """Test step with invalid order"""
+        with pytest.raises(ValidationError):
+            Step(
+                role=StepRole.SETUP,
+                order=0,  # Invalid: must be >= 1
+                content="Test content"
+            )
+    
+    def test_step_response(self):
+        """Test step response creation"""
+        steps = [
+            Step(
+                role=StepRole.SETUP,
+                order=1,
+                content="Setup 1"
+            ),
+            Step(
+                role=StepRole.PUNCHLINE,
+                order=2,
+                content="Punchline 2"
+            )
+        ]
+        
+        response = StepResponse(steps=steps, count=2)
+        
+        assert len(response.steps) == 2
+        assert response.count == 2
+        assert response.steps[0].content == "Setup 1"
+        assert response.steps[1].content == "Punchline 2"

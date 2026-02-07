@@ -6,6 +6,36 @@ import uuid
 from datetime import datetime, timezone
 
 
+class StepRole(str, Enum):
+    SETUP = "setup"
+    PUNCHLINE = "punchline"
+    BRIDGE = "bridge"
+    TOPPER = "topper"
+    CALLBACK = "callback"
+
+
+class Step(BaseModel):
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        extra="forbid"
+    )
+    
+    uuid: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), description="UUID primary key for the step")
+    role: StepRole = Field(..., description="Role of the step in the joke structure")
+    order: int = Field(default=1, ge=1, description="Order of the step in the joke sequence")
+    content: str = Field(..., description="Content of the step")
+    joke_uuid: Optional[str] = Field(default=None, description="UUID of the parent joke")
+    
+    @classmethod
+    def get_default(cls):
+        return cls(
+            role=StepRole.SETUP,
+            order=1,
+            content=""
+        )
+
+
 class JokeCategory(str, Enum):
     GENERAL = "general"
     SCIENCE = "science"
@@ -27,6 +57,7 @@ class Joke(BaseModel):
     category: JokeCategory = Field(..., description="The category of the joke")
     rating: Optional[float] = Field(None, ge=0, le=5, description="User rating from 0 to 5")
     created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc), description="Timestamp when joke was created")
+    steps: Optional[List[Step]] = Field(default=None, description="List of steps that make up this joke")
     
     @classmethod
     def get_default(cls):
@@ -62,6 +93,17 @@ class JokeResponse(BaseModel):
     
     jokes: List[Joke] = Field(..., description="List of jokes returned")
     count: int = Field(..., description="Number of jokes returned")
+
+
+class StepResponse(BaseModel):
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        extra="forbid"
+    )
+    
+    steps: List[Step] = Field(..., description="List of steps returned")
+    count: int = Field(..., description="Number of steps returned")
 
 
 class JokeDatabase:
