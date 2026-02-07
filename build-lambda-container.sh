@@ -72,7 +72,7 @@ Resources:
         - CloudWatchLogsFullAccess
       Timeout: 30
       MemorySize: 512
-      ImageUri: $ECR_REGISTRY/$REPO_NAME@sha256:9a1b8fa24b9e595509f9361de9d9705cb3a97a982f82f276dd3a55c9fdb6a1dd
+      ImageUri: $ECR_REGISTRY/$REPO_NAME@sha256:3ca55252160504b94cfe022fdee5aa22dbe08c4f187322e627e463e4b1a26a30
 
 Outputs:
   ApiUrl:

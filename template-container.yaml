@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Joke Machine API using Lambda Container'
+
+Resources:
+  JokeMachineFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Policies:
+        - CloudWatchLogsFullAccess
+      Timeout: 30
+      MemorySize: 512
+      ImageUri: 600775874112.dkr.ecr.us-east-1.amazonaws.com/joke-machine@sha256:3ca55252160504b94cfe022fdee5aa22dbe08c4f187322e627e463e4b1a26a30
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+  FunctionName:
+    Description: "Lambda Function Name"
+    Value: !Ref JokeMachineFunction
