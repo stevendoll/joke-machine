@@ -102,7 +102,7 @@ def get_jokes(category: Optional[str] = None, count: Optional[int] = None):
         logger.error(f"Error getting jokes: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@app.post("/jokes/add", response_model=Joke)
+@app.post("/jokes", response_model=Joke)
 def add_joke(joke: Joke):
     """
     Add a new joke to the database

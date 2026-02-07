@@ -189,7 +189,7 @@ class TestAPI:
             "category": "programming"
         }
         
-        response = client.post("/jokes/add", json=new_joke)
+        response = client.post("/jokes", json=new_joke)
         assert response.status_code == 200
         
         data = response.json()
@@ -207,11 +207,11 @@ class TestAPI:
         }
         
         # Add the joke first
-        response1 = client.post("/jokes/add", json=new_joke)
+        response1 = client.post("/jokes", json=new_joke)
         assert response1.status_code == 200
         
         # Try to add the same joke again - should succeed with different UUID
-        response2 = client.post("/jokes/add", json=new_joke)
+        response2 = client.post("/jokes", json=new_joke)
         assert response2.status_code == 200
         
         # Verify they have different UUIDs but same content
@@ -265,7 +265,7 @@ class TestAPI:
             "punchline": "This will be deleted",
             "category": "general"
         }
-        response = client.post("/jokes/add", json=new_joke)
+        response = client.post("/jokes", json=new_joke)
         assert response.status_code == 200
         joke_uuid = response.json()["uuid"]
         
