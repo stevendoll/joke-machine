@@ -55,29 +55,29 @@ def get_joke_by_id(joke_id: str):
         logger.error(f"Error getting joke: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@app.get("/jokes/all")
-def get_all_jokes():
-    """Get all jokes from database"""
-    try:
-        logger.info("Retrieving all jokes")
-        
-        all_jokes = db.get_all_jokes()
-        
-        logger.info(f"Returning {len(all_jokes)} jokes")
-        
-        return JokeResponse(jokes=all_jokes, total=len(all_jokes))
-        
-    except Exception as e:
-        logger.error(f"Error getting all jokes: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
-
 @app.get("/jokes")
-def get_jokes(category: Optional[str] = None, count: int = 10):
+def get_jokes(category: Optional[str] = None, count: Optional[int] = None):
     """Get jokes from database with optional category filter"""
     try:
         logger.info(f"Retrieving jokes with category: {category}, count: {count}")
         
-        # Validate count
+        # If no count specified, get all jokes
+        if count is None:
+            all_jokes = db.get_all_jokes()
+            # Filter by category if specified
+            if category:
+                try:
+                    category_enum = JokeCategory(category)
+                    filtered_jokes = [j for j in all_jokes if j.category == category_enum]
+                    logger.info(f"Returning {len(filtered_jokes)} filtered jokes")
+                    return JokeResponse(jokes=filtered_jokes, total=len(filtered_jokes))
+                except ValueError:
+                    raise HTTPException(status_code=400, detail=f"Invalid category: {category}")
+            else:
+                logger.info(f"Returning all {len(all_jokes)} jokes")
+                return JokeResponse(jokes=all_jokes, total=len(all_jokes))
+        
+        # Validate count if specified
         if count < 1 or count > 10:
             raise HTTPException(status_code=400, detail="Count must be between 1 and 10")
         

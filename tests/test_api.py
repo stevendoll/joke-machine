@@ -23,15 +23,15 @@ class TestAPI:
         assert response.json() == {"status": "healthy"}
     
     def test_joke_endpoint_default(self):
-        """Test the jokes endpoint with default parameters"""
+        """Test the jokes endpoint with default parameters (no count specified)"""
         response = client.get("/jokes")
         assert response.status_code == 200
         
         data = response.json()
         assert "jokes" in data
         assert "total" in data
-        assert data["total"] == 10  # Default count is now 10
-        assert len(data["jokes"]) == 10
+        assert data["total"] > 0  # Should return all jokes when no count specified
+        assert len(data["jokes"]) == data["total"]
         
         joke = data["jokes"][0]
         assert "setup" in joke
@@ -122,7 +122,7 @@ class TestAPI:
     
     def test_get_all_jokes(self):
         """Test getting all jokes"""
-        response = client.get("/jokes/all")
+        response = client.get("/jokes")
         assert response.status_code == 200
         
         data = response.json()
@@ -133,16 +133,16 @@ class TestAPI:
     
     def test_get_jokes_with_query_params(self):
         """Test getting jokes with query parameters"""
-        # Test without category (default behavior)
+        # Test without category and without count (should return all jokes)
         response = client.get("/jokes")
         assert response.status_code == 200
         
         data = response.json()
         assert "jokes" in data
         assert "total" in data
-        assert len(data["jokes"]) <= 10  # Default count
+        assert len(data["jokes"]) == data["total"]  # All jokes
         
-        # Test with category
+        # Test with category only (should return all jokes in that category)
         response = client.get("/jokes?category=programming")
         assert response.status_code == 200
         
@@ -150,7 +150,7 @@ class TestAPI:
         assert len(data["jokes"]) > 0
         assert all(joke["category"] == "programming" for joke in data["jokes"])
         
-        # Test with count
+        # Test with count only (should return specified number of random jokes)
         response = client.get("/jokes?count=3")
         assert response.status_code == 200
         
