@@ -107,7 +107,7 @@ class TestAPI:
         assert response.status_code == 200
         joke_uuid = response.json()["jokes"][0]["uuid"]
         
-        response = client.get(f"/joke/{joke_uuid}")
+        response = client.get(f"/jokes/{joke_uuid}")
         assert response.status_code == 200
         
         data = response.json()
@@ -117,7 +117,7 @@ class TestAPI:
     
     def test_get_joke_by_invalid_id(self):
         """Test getting a joke by invalid ID"""
-        response = client.get("/joke/invalid_id")
+        response = client.get("/jokes/invalid_id")
         assert response.status_code == 404
     
     def test_get_all_jokes(self):

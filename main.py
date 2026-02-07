@@ -34,7 +34,7 @@ def echo_endpoint(data: Dict[str, Any]):
     logger.info(f"Echo endpoint called with: {data}")
     return {"received": data, "status": "echoed"}
 
-@app.get("/joke/{joke_id}")
+@app.get("/jokes/{joke_id}")
 def get_joke_by_id(joke_id: str):
     """Get a specific joke by ID"""
     try:
