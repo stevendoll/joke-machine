@@ -141,9 +141,11 @@ class JokeDatabase:
             ]
 
     def get_jokes(
-        self, category: Optional[JokeCategory] = None, count: int = 1
+        self, category: Optional[JokeCategory] = None, count: int = 1, offset: int = 0
     ) -> List[Joke]:
         """Get jokes filtered by category"""
+        # This is a mock implementation for testing
+        # In real implementation, this would call the database
         jokes = self._jokes
 
         # Filter by category if specified
@@ -152,8 +154,7 @@ class JokeDatabase:
 
         # Return random selection
         if len(jokes) <= count:
-            return jokes
-
+            return jokes[offset:]
         return random.sample(jokes, count)
 
     def get_all_jokes(self) -> List[Joke]:

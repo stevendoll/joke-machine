@@ -317,9 +317,9 @@ class JokeDatabase:
             return None
 
     def get_jokes(
-        self, category: Optional[JokeCategory] = None, count: int = 10
+        self, category: Optional[JokeCategory] = None, count: int = 10, offset: int = 0
     ) -> List[Joke]:
-        """Get jokes filtered by category"""
+        """Get jokes filtered by category with offset support"""
         query = "SELECT * FROM jokes"
         params = []
 
@@ -334,9 +334,9 @@ class JokeDatabase:
         if conditions:
             query += " WHERE " + " AND ".join(conditions)
 
-        # Add random ordering and limit
-        query += " ORDER BY RANDOM() LIMIT ?"
-        params.append(count)
+        # Add ordering and pagination
+        query += " ORDER BY created_at DESC LIMIT ? OFFSET ?"
+        params.extend([count, offset])
 
         with self._get_connection() as conn:
             cursor = conn.execute(query, params)

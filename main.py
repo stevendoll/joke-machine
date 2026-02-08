@@ -142,24 +142,14 @@ def get_jokes(
                 )
 
         # Get jokes from database
-        jokes = db.get_jokes(category=category_enum, count=limit)
+        jokes = db.get_jokes(category=category_enum, count=limit, offset=offset)
 
-        # Apply offset (get more jokes to account for offset)
-        if offset > 0:
-            # Get additional jokes to account for offset
-            additional_jokes = db.get_jokes(category=category_enum, count=offset)
-            all_jokes = additional_jokes + jokes
-            # Apply offset
-            final_jokes = all_jokes[offset : offset + limit]
-        else:
-            final_jokes = jokes
-
-        logger.info(f"Returning {len(final_jokes)} jokes")
+        logger.info(f"Returning {len(jokes)} jokes")
         metrics.add_metric(
-            "jokes_retrieved", unit=MetricUnit.Count, value=len(final_jokes)
+            "jokes_retrieved", unit=MetricUnit.Count, value=len(jokes)
         )
 
-        return JokeResponse(jokes=final_jokes, count=len(final_jokes))
+        return JokeResponse(jokes=jokes, count=len(jokes))
 
     except HTTPException:
         raise

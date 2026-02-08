@@ -101,7 +101,7 @@ class TestJokeDatabase:
 
     def test_get_jokes_by_category(self):
         """Test getting jokes by category"""
-        jokes = joke_db.get_jokes(JokeCategory.GENERAL)
+        jokes = joke_db.get_jokes(JokeCategory.GENERAL, offset=0)
 
         # Should return general jokes (may be empty if no general jokes exist)
         assert isinstance(jokes, list)
@@ -111,14 +111,14 @@ class TestJokeDatabase:
 
     def test_get_jokes_by_category_and_count(self):
         """Test getting jokes by category with count"""
-        jokes = joke_db.get_jokes(JokeCategory.PROGRAMMING, count=2)
+        jokes = joke_db.get_jokes(JokeCategory.PROGRAMMING, count=2, offset=0)
 
         assert len(jokes) <= 2
         assert all(joke.category == JokeCategory.PROGRAMMING for joke in jokes)
 
     def test_get_jokes_with_count(self):
         """Test getting a specific number of jokes"""
-        jokes = joke_db.get_jokes(count=2)
+        jokes = joke_db.get_jokes(count=2, offset=0)
 
         assert len(jokes) <= 2
 
@@ -153,7 +153,7 @@ class TestJokeDatabase:
 
     def test_get_jokes_nonexistent_category(self):
         """Test getting jokes with a category that doesn't exist"""
-        jokes = joke_db.get_jokes(JokeCategory.PROGRAMMING)
+        jokes = joke_db.get_jokes(JokeCategory.PROGRAMMING, offset=0)
 
         # Should return programming jokes (may be empty if no programming jokes exist)
         assert isinstance(jokes, list)
