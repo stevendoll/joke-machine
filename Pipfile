@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
-pydantic = "*"
+pydantic = ">=2.0,<3.0"
 python-multipart = "*"
 mangum = "*"
 pytest = "*"
@@ -20,6 +20,7 @@ aws-lambda-powertools = "*"
 local = "uvicorn main:app --reload --host 0.0.0.0 --port 8000"
 test = "pytest"
 test-cov = "pytest --cov=. --cov-report=html"
+reset-db = "rm -f jokes.db"
 
 [requires]
-python_version = "3.13"
+python_version = "3.14"

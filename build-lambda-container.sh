@@ -48,8 +48,8 @@ docker tag $REPO_NAME:latest $ECR_REGISTRY/$REPO_NAME:latest
 echo "📤 Pushing to ECR..."
 docker push $ECR_REGISTRY/$REPO_NAME:latest
 
-# Get the image SHA that was just pushed
-IMAGE_SHA=$(docker inspect --format='{{index .RepoDigests 0}}' $ECR_REGISTRY/$REPO_NAME:latest)
+# Get the latest tag instead of SHA for now
+IMAGE_URI="$ECR_REGISTRY/$REPO_NAME:latest"
 
 # Update CloudFormation template for container
 echo "📋 Creating container template..."
@@ -75,7 +75,7 @@ Resources:
         - CloudWatchLogsFullAccess
       Timeout: 30
       MemorySize: 512
-      ImageUri: $IMAGE_SHA
+      ImageUri: $IMAGE_URI
 
 Outputs:
   ApiUrl:
@@ -86,6 +86,10 @@ Outputs:
     Value: !Ref JokeMachineFunction
 EOF
 
+# Build container with SAM
+echo "🔨 Building with SAM..."
+sam build
+
 # Deploy container
 echo "🚀 Deploying Lambda container..."
 sam deploy \
@@ -93,7 +97,8 @@ sam deploy \
     --stack-name joke-machine-container \
     --capabilities CAPABILITY_IAM \
     --region $REGION \
-    --image-repository $ECR_REGISTRY/$REPO_NAME
+    --image-repository $ECR_REGISTRY/$REPO_NAME \
+    --parameter-overrides ParameterKey=Runtime,ParameterValue=python3.14
 
 # Get API URL
 echo "🌐 Getting API URL..."
