@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 import logging
 from contextlib import contextmanager
@@ -58,6 +58,14 @@ class JokeDatabase:
                     joke_id TEXT NOT NULL,
                     FOREIGN KEY (joke_id) REFERENCES jokes (id)
                 )
+            """)
+            conn.commit()
+            
+            # Migrate existing NULL created_at values
+            conn.execute("""
+                UPDATE jokes 
+                SET created_at = CURRENT_TIMESTAMP 
+                WHERE created_at IS NULL
             """)
             conn.commit()
 
@@ -226,7 +234,7 @@ class JokeDatabase:
 
                     # Set created_at if not provided (for new jokes)
                     if joke.created_at is None:
-                        joke.created_at = datetime.now()
+                        joke.created_at = datetime.now(timezone.utc).replace(microsecond=0)
 
                     # Insert joke first
                     conn.execute(
@@ -306,7 +314,7 @@ class JokeDatabase:
                     id=row["id"],
                     category=JokeCategory(row["category"]),
                     rating=row["rating"],
-                    created_at=row["created_at"] or datetime.now(),
+                    created_at=row["created_at"],
                     steps=steps,
                 )
             return None
@@ -366,7 +374,7 @@ class JokeDatabase:
                         id=row["id"],
                         category=JokeCategory(row["category"]),
                         rating=row["rating"],
-                        created_at=row["created_at"] or datetime.now(),
+                        created_at=row["created_at"],
                         steps=steps,
                     )
                 )
@@ -408,7 +416,7 @@ class JokeDatabase:
                         id=row["id"],
                         category=JokeCategory(row["category"]),
                         rating=row["rating"],
-                        created_at=row["created_at"] or datetime.now(),
+                        created_at=row["created_at"],
                         steps=steps,
                     )
                 )

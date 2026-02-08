@@ -57,7 +57,7 @@ class Joke(BaseModel):
         None, ge=0, le=5, description="User rating from 0 to 5"
     )
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(timezone.utc).replace(microsecond=0),
         description="Timestamp when joke was created",
     )
     steps: Optional[List[Step]] = Field(
