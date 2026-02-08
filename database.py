@@ -229,9 +229,6 @@ class JokeDatabase:
         for attempt in range(max_attempts):
             try:
                 with self._get_connection() as conn:
-                    # Always generate a new ID for each attempt
-                    joke.id = str(uuid.uuid4())
-
                     # Set created_at if not provided (for new jokes)
                     if joke.created_at is None:
                         joke.created_at = datetime.now(timezone.utc).replace(microsecond=0)

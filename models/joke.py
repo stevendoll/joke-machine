@@ -19,7 +19,7 @@ class Step(BaseModel):
         str_strip_whitespace=True, validate_assignment=True, extra="forbid"
     )
 
-    id: Optional[str] = Field(
+    id: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
         description="UUID primary key for the step",
     )
@@ -48,9 +48,9 @@ class Joke(BaseModel):
         str_strip_whitespace=True, validate_assignment=True, extra="forbid"
     )
 
-    id: Optional[str] = Field(
+    id: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
-        description="UUID primary key for the joke",
+        description="UUID primary key for joke",
     )
     category: JokeCategory = Field(..., description="The category of the joke")
     rating: Optional[float] = Field(
