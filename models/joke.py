@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional, Literal
+from typing import Optional, List
 from enum import Enum
+from datetime import datetime, timezone
 import random
 import uuid
-from datetime import datetime, timezone
 
 
 class StepRole(str, Enum):
@@ -16,24 +16,23 @@ class StepRole(str, Enum):
 
 class Step(BaseModel):
     model_config = ConfigDict(
-        str_strip_whitespace=True,
-        validate_assignment=True,
-        extra="forbid"
+        str_strip_whitespace=True, validate_assignment=True, extra="forbid"
     )
-    
-    id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), description="UUID primary key for the step")
+
+    id: Optional[str] = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        description="UUID primary key for the step",
+    )
     role: StepRole = Field(..., description="Role of the step in the joke structure")
-    order: int = Field(default=1, ge=1, description="Order of the step in the joke sequence")
+    order: int = Field(
+        default=1, ge=1, description="Order of the step in the joke sequence"
+    )
     content: str = Field(..., description="Content of the step")
     joke_id: Optional[str] = Field(default=None, description="ID of the parent joke")
-    
+
     @classmethod
     def get_default(cls):
-        return cls(
-            role=StepRole.SETUP,
-            order=1,
-            content=""
-        )
+        return cls(role=StepRole.SETUP, order=1, content="")
 
 
 class JokeCategory(str, Enum):
@@ -46,35 +45,40 @@ class JokeCategory(str, Enum):
 
 class Joke(BaseModel):
     model_config = ConfigDict(
-        str_strip_whitespace=True,
-        validate_assignment=True,
-        extra="forbid"
+        str_strip_whitespace=True, validate_assignment=True, extra="forbid"
     )
-    
-    id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), description="UUID primary key for the joke")
+
+    id: Optional[str] = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        description="UUID primary key for the joke",
+    )
     category: JokeCategory = Field(..., description="The category of the joke")
-    rating: Optional[float] = Field(None, ge=0, le=5, description="User rating from 0 to 5")
-    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc), description="Timestamp when joke was created")
-    steps: Optional[List[Step]] = Field(default=None, description="List of steps that make up this joke")
-    
+    rating: Optional[float] = Field(
+        None, ge=0, le=5, description="User rating from 0 to 5"
+    )
+    created_at: Optional[datetime] = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp when joke was created",
+    )
+    steps: Optional[List[Step]] = Field(
+        default=None, description="List of steps that make up this joke"
+    )
+
     @classmethod
     def get_default(cls):
-        return cls(
-            category=JokeCategory.GENERAL,
-            rating=None
-        )
+        return cls(category=JokeCategory.GENERAL, rating=None)
 
 
 class JokeRequest(BaseModel):
     model_config = ConfigDict(
-        str_strip_whitespace=True,
-        validate_assignment=True,
-        extra="forbid"
+        str_strip_whitespace=True, validate_assignment=True, extra="forbid"
     )
-    
-    category: Optional[JokeCategory] = Field(default=None, description="Specific category requested")
+
+    category: Optional[JokeCategory] = Field(
+        default=None, description="Specific category requested"
+    )
     count: int = Field(default=1, ge=1, le=10, description="Number of jokes to return")
-    
+
     @classmethod
     def get_default(cls):
         return cls(category=None, count=1)
@@ -82,38 +86,35 @@ class JokeRequest(BaseModel):
 
 class JokeResponse(BaseModel):
     model_config = ConfigDict(
-        str_strip_whitespace=True,
-        validate_assignment=True,
-        extra="forbid"
+        str_strip_whitespace=True, validate_assignment=True, extra="forbid"
     )
-    
+
     jokes: List[Joke] = Field(..., description="List of jokes returned")
     count: int = Field(..., description="Number of jokes returned")
 
 
 class StepResponse(BaseModel):
     model_config = ConfigDict(
-        str_strip_whitespace=True,
-        validate_assignment=True,
-        extra="forbid"
+        str_strip_whitespace=True, validate_assignment=True, extra="forbid"
     )
-    
+
     steps: List[Step] = Field(..., description="List of steps returned")
     count: int = Field(..., description="Number of steps returned")
 
 
 class JokeDatabase:
     """In-memory joke database with sample jokes"""
-    
+
     def __init__(self):
         self._jokes = []
         # Load jokes from SQLite database
         self._load_from_sqlite()
-    
+
     def _load_from_sqlite(self):
         """Load jokes from SQLite database"""
         try:
             from database import db as sqlite_db
+
             sqlite_jokes = sqlite_db.get_all_jokes()
             self._jokes = sqlite_jokes
         except Exception:
@@ -127,36 +128,38 @@ class JokeDatabase:
                             id=str(uuid.uuid4()),
                             role=StepRole.SETUP,
                             order=1,
-                            content="Why don't scientists trust atoms?"
+                            content="Why don't scientists trust atoms?",
                         ),
                         Step(
                             id=str(uuid.uuid4()),
                             role=StepRole.PUNCHLINE,
                             order=2,
-                            content="Because they make up everything!"
-                        )
-                    ]
+                            content="Because they make up everything!",
+                        ),
+                    ],
                 )
             ]
-    
-    def get_jokes(self, category: Optional[JokeCategory] = None, count: int = 1) -> List[Joke]:
+
+    def get_jokes(
+        self, category: Optional[JokeCategory] = None, count: int = 1
+    ) -> List[Joke]:
         """Get jokes filtered by category"""
         jokes = self._jokes
-        
+
         # Filter by category if specified
         if category:
             jokes = [j for j in jokes if j.category == category]
-        
+
         # Return random selection
         if len(jokes) <= count:
             return jokes
-        
+
         return random.sample(jokes, count)
-    
+
     def get_all_jokes(self) -> List[Joke]:
         """Get all jokes from the database"""
         return self._jokes
-    
+
     def get_joke_by_id(self, joke_id: str) -> Optional[Joke]:
         """Get a specific joke by ID"""
         for joke in self._jokes:

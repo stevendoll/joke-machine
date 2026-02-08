@@ -58,7 +58,9 @@ def _combine_headers_v2(
             cookies.append(normalized_value)
         else:
             if normalized_key in output_headers:
-                normalized_value = f"{output_headers[normalized_key]},{normalized_value}"
+                normalized_value = (
+                    f"{output_headers[normalized_key]},{normalized_value}"
+                )
             output_headers[normalized_key] = normalized_value
 
     return output_headers, cookies
@@ -66,10 +68,14 @@ def _combine_headers_v2(
 
 class APIGateway:
     @classmethod
-    def infer(cls, event: LambdaEvent, context: LambdaContext, config: LambdaConfig) -> bool:
+    def infer(
+        cls, event: LambdaEvent, context: LambdaContext, config: LambdaConfig
+    ) -> bool:
         return "resource" in event and "requestContext" in event
 
-    def __init__(self, event: LambdaEvent, context: LambdaContext, config: LambdaConfig) -> None:
+    def __init__(
+        self, event: LambdaEvent, context: LambdaContext, config: LambdaConfig
+    ) -> None:
         self.event = event
         self.context = context
         self.config = config
@@ -108,7 +114,9 @@ class APIGateway:
         }
 
     def __call__(self, response: Response) -> dict[str, Any]:
-        finalized_headers, multi_value_headers = handle_multi_value_headers(response["headers"])
+        finalized_headers, multi_value_headers = handle_multi_value_headers(
+            response["headers"]
+        )
         finalized_body, is_base64_encoded = handle_base64_response_body(
             response["body"], finalized_headers, self.config["text_mime_types"]
         )
@@ -116,7 +124,9 @@ class APIGateway:
         return {
             "statusCode": response["status"],
             "headers": handle_exclude_headers(finalized_headers, self.config),
-            "multiValueHeaders": handle_exclude_headers(multi_value_headers, self.config),
+            "multiValueHeaders": handle_exclude_headers(
+                multi_value_headers, self.config
+            ),
             "body": finalized_body,
             "isBase64Encoded": is_base64_encoded,
         }
@@ -124,10 +134,14 @@ class APIGateway:
 
 class HTTPGateway:
     @classmethod
-    def infer(cls, event: LambdaEvent, context: LambdaContext, config: LambdaConfig) -> bool:
+    def infer(
+        cls, event: LambdaEvent, context: LambdaContext, config: LambdaConfig
+    ) -> bool:
         return "version" in event and "requestContext" in event
 
-    def __init__(self, event: LambdaEvent, context: LambdaContext, config: LambdaConfig) -> None:
+    def __init__(
+        self, event: LambdaEvent, context: LambdaContext, config: LambdaConfig
+    ) -> None:
         self.event = event
         self.context = context
         self.config = config
@@ -204,9 +218,13 @@ class HTTPGateway:
                 "cookies": cookies or None,
                 "isBase64Encoded": is_base64_encoded,
             }
-            return {key: value for key, value in response_out.items() if value is not None}
+            return {
+                key: value for key, value in response_out.items() if value is not None
+            }
 
-        finalized_headers, multi_value_headers = handle_multi_value_headers(response["headers"])
+        finalized_headers, multi_value_headers = handle_multi_value_headers(
+            response["headers"]
+        )
         finalized_body, is_base64_encoded = handle_base64_response_body(
             response["body"], finalized_headers, self.config["text_mime_types"]
         )

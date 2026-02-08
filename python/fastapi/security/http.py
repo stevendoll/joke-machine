@@ -50,19 +50,15 @@ class HTTPAuthorizationCredentials(BaseModel):
 
     scheme: Annotated[
         str,
-        Doc(
-            """
+        Doc("""
             The HTTP authorization scheme extracted from the header value.
-            """
-        ),
+            """),
     ]
     credentials: Annotated[
         str,
-        Doc(
-            """
+        Doc("""
             The HTTP authorization credentials extracted from the header value.
-            """
-        ),
+            """),
     ]
 
 
@@ -144,36 +140,29 @@ class HTTPBasic(HTTPBase):
         *,
         scheme_name: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme name.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         realm: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 HTTP Basic authentication realm.
-                """
-            ),
+                """),
         ] = None,
         description: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme description.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         auto_error: Annotated[
             bool,
-            Doc(
-                """
+            Doc("""
                 By default, if the HTTP Basic authentication is not provided (a
                 header), `HTTPBasic` will automatically cancel the request and send the
                 client an error.
@@ -187,8 +176,7 @@ class HTTPBasic(HTTPBase):
                 It is also useful when you want to have authentication that can be
                 provided in one of multiple optional ways (for example, in HTTP Basic
                 authentication or in an HTTP Bearer token).
-                """
-            ),
+                """),
         ] = True,
     ):
         self.model = HTTPBaseModel(scheme="basic", description=description)
@@ -259,28 +247,23 @@ class HTTPBearer(HTTPBase):
         bearerFormat: Annotated[Optional[str], Doc("Bearer token format.")] = None,
         scheme_name: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme name.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         description: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme description.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         auto_error: Annotated[
             bool,
-            Doc(
-                """
+            Doc("""
                 By default, if the HTTP Bearer token is not provided (in an
                 `Authorization` header), `HTTPBearer` will automatically cancel the
                 request and send the client an error.
@@ -294,8 +277,7 @@ class HTTPBearer(HTTPBase):
                 It is also useful when you want to have authentication that can be
                 provided in one of multiple optional ways (for example, in an HTTP
                 Bearer token or in a cookie).
-                """
-            ),
+                """),
         ] = True,
     ):
         self.model = HTTPBearerModel(bearerFormat=bearerFormat, description=description)
@@ -363,28 +345,23 @@ class HTTPDigest(HTTPBase):
         *,
         scheme_name: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme name.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         description: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme description.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         auto_error: Annotated[
             bool,
-            Doc(
-                """
+            Doc("""
                 By default, if the HTTP Digest is not provided, `HTTPDigest` will
                 automatically cancel the request and send the client an error.
 
@@ -397,8 +374,7 @@ class HTTPDigest(HTTPBase):
                 It is also useful when you want to have authentication that can be
                 provided in one of multiple optional ways (for example, in HTTP
                 Digest or in a cookie).
-                """
-            ),
+                """),
         ] = True,
     ):
         self.model = HTTPBaseModel(scheme="digest", description=description)

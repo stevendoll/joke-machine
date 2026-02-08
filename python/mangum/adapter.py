@@ -9,7 +9,14 @@ from typing import Any
 from mangum.exceptions import ConfigurationError
 from mangum.handlers import ALB, APIGateway, HTTPGateway, LambdaAtEdge
 from mangum.protocols import HTTPCycle, LifespanCycle
-from mangum.types import ASGI, LambdaConfig, LambdaContext, LambdaEvent, LambdaHandler, LifespanMode
+from mangum.types import (
+    ASGI,
+    LambdaConfig,
+    LambdaContext,
+    LambdaEvent,
+    LambdaHandler,
+    LifespanMode,
+)
 
 logger = logging.getLogger("mangum")
 
@@ -36,7 +43,9 @@ class Mangum:
         exclude_headers: list[str] | None = None,
     ) -> None:
         if lifespan not in ("auto", "on", "off"):
-            raise ConfigurationError("Invalid argument supplied for `lifespan`. Choices are: auto|on|off")
+            raise ConfigurationError(
+                "Invalid argument supplied for `lifespan`. Choices are: auto|on|off"
+            )
 
         self.app = app
         self.lifespan = lifespan

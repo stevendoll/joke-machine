@@ -40,13 +40,11 @@ class BackgroundTasks(StarletteBackgroundTasks):
         self,
         func: Annotated[
             Callable[P, Any],
-            Doc(
-                """
+            Doc("""
                 The function to call after the response is sent.
 
                 It can be a regular `def` function or an `async def` function.
-                """
-            ),
+                """),
         ],
         *args: P.args,
         **kwargs: P.kwargs,

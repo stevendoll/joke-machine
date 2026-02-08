@@ -46,38 +46,32 @@ class HTTPException(StarletteHTTPException):
         self,
         status_code: Annotated[
             int,
-            Doc(
-                """
+            Doc("""
                 HTTP status code to send to the client.
 
                 Read more about it in the
                 [FastAPI docs for Handling Errors](https://fastapi.tiangolo.com/tutorial/handling-errors/#use-httpexception)
-                """
-            ),
+                """),
         ],
         detail: Annotated[
             Any,
-            Doc(
-                """
+            Doc("""
                 Any data to be sent to the client in the `detail` key of the JSON
                 response.
 
                 Read more about it in the
                 [FastAPI docs for Handling Errors](https://fastapi.tiangolo.com/tutorial/handling-errors/#use-httpexception)
-                """
-            ),
+                """),
         ] = None,
         headers: Annotated[
             Optional[dict[str, str]],
-            Doc(
-                """
+            Doc("""
                 Any headers to send to the client in the response.
 
                 Read more about it in the
                 [FastAPI docs for Handling Errors](https://fastapi.tiangolo.com/tutorial/handling-errors/#add-custom-headers)
 
-                """
-            ),
+                """),
         ] = None,
     ) -> None:
         super().__init__(status_code=status_code, detail=detail, headers=headers)
@@ -129,17 +123,14 @@ class WebSocketException(StarletteWebSocketException):
         self,
         code: Annotated[
             int,
-            Doc(
-                """
+            Doc("""
                 A closing code from the
                 [valid codes defined in the specification](https://datatracker.ietf.org/doc/html/rfc6455#section-7.4.1).
-                """
-            ),
+                """),
         ],
         reason: Annotated[
             Union[str, None],
-            Doc(
-                """
+            Doc("""
                 The reason to close the WebSocket connection.
 
                 It is UTF-8-encoded data. The interpretation of the reason is up to the
@@ -147,8 +138,7 @@ class WebSocketException(StarletteWebSocketException):
 
                 It could contain text that could be human-readable or interpretable
                 by the client code, etc.
-                """
-            ),
+                """),
         ] = None,
     ) -> None:
         super().__init__(code=code, reason=reason)

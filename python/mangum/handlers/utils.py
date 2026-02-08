@@ -85,7 +85,9 @@ def handle_base64_response_body(
     return output_body, is_base64_encoded
 
 
-def handle_exclude_headers(headers: dict[str, Any], config: LambdaConfig) -> dict[str, Any]:
+def handle_exclude_headers(
+    headers: dict[str, Any], config: LambdaConfig
+) -> dict[str, Any]:
     finalized_headers = {}
     for header_key, header_value in headers.items():
         if header_key in config["exclude_headers"]:

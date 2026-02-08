@@ -111,91 +111,73 @@ encoders_by_class_tuples = generate_encoders_by_class_tuples(ENCODERS_BY_TYPE)
 def jsonable_encoder(
     obj: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             The input object to convert to JSON.
-            """
-        ),
+            """),
     ],
     include: Annotated[
         Optional[IncEx],
-        Doc(
-            """
+        Doc("""
             Pydantic's `include` parameter, passed to Pydantic models to set the
             fields to include.
-            """
-        ),
+            """),
     ] = None,
     exclude: Annotated[
         Optional[IncEx],
-        Doc(
-            """
+        Doc("""
             Pydantic's `exclude` parameter, passed to Pydantic models to set the
             fields to exclude.
-            """
-        ),
+            """),
     ] = None,
     by_alias: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             Pydantic's `by_alias` parameter, passed to Pydantic models to define if
             the output should use the alias names (when provided) or the Python
             attribute names. In an API, if you set an alias, it's probably because you
             want to use it in the result, so you probably want to leave this set to
             `True`.
-            """
-        ),
+            """),
     ] = True,
     exclude_unset: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             Pydantic's `exclude_unset` parameter, passed to Pydantic models to define
             if it should exclude from the output the fields that were not explicitly
             set (and that only had their default values).
-            """
-        ),
+            """),
     ] = False,
     exclude_defaults: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             Pydantic's `exclude_defaults` parameter, passed to Pydantic models to define
             if it should exclude from the output the fields that had the same default
             value, even when they were explicitly set.
-            """
-        ),
+            """),
     ] = False,
     exclude_none: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             Pydantic's `exclude_none` parameter, passed to Pydantic models to define
             if it should exclude from the output any fields that have a `None` value.
-            """
-        ),
+            """),
     ] = False,
     custom_encoder: Annotated[
         Optional[dict[Any, Callable[[Any], Any]]],
-        Doc(
-            """
+        Doc("""
             Pydantic's `custom_encoder` parameter, passed to Pydantic models to define
             a custom encoder.
-            """
-        ),
+            """),
     ] = None,
     sqlalchemy_safe: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             Exclude from the output any fields that start with the name `_sa`.
 
             This is mainly a hack for compatibility with SQLAlchemy objects, they
             store internal SQLAlchemy-specific state in attributes named with `_sa`,
             and those objects can't (and shouldn't be) serialized to JSON.
-            """
-        ),
+            """),
     ] = True,
 ) -> Any:
     """

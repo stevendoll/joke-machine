@@ -14,14 +14,21 @@ httpx = "*"
 aws-lambda-powertools = {extras = ["parser"], version = "*"}
 aws-xray-sdk = "*"
 pytest-cov = "*"
+flake8 = "*"
+black = "*"
 
 [dev-packages]
 pytest-cov = "*"
+flake8 = "*"
+black = "*"
 
 [scripts]
 local = "uvicorn main:app --reload --host 0.0.0.0 --port 8000"
 test = "pytest"
 test-cov = "pytest --cov=. --cov-report=html"
+lint = "flake8 ."
+format = "black ."
+format-check = "black --check ."
 reset-db = "rm -f jokes.db"
 
 [requires]

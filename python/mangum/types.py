@@ -92,7 +92,9 @@ Send: TypeAlias = Callable[[Message], Awaitable[None]]
 
 
 class ASGI(Protocol):
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None: ...  # pragma: no cover
+    async def __call__(
+        self, scope: Scope, receive: Receive, send: Send
+    ) -> None: ...  # pragma: no cover
 
 
 LifespanMode: TypeAlias = Literal["auto", "on", "off"]
@@ -114,7 +116,9 @@ class LambdaHandler(Protocol):
     def __init__(self, *args: Any) -> None: ...  # pragma: no cover
 
     @classmethod
-    def infer(cls, event: LambdaEvent, context: LambdaContext, config: LambdaConfig) -> bool: ...  # pragma: no cover
+    def infer(
+        cls, event: LambdaEvent, context: LambdaContext, config: LambdaConfig
+    ) -> bool: ...  # pragma: no cover
 
     @property
     def body(self) -> bytes: ...  # pragma: no cover

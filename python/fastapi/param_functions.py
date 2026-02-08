@@ -14,225 +14,179 @@ _Unset: Any = Undefined
 def Path(  # noqa: N802
     default: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Default value if the parameter field is not set.
 
             This doesn't affect `Path` parameters as the value is always required.
             The parameter is available only for compatibility.
-            """
-        ),
+            """),
     ] = ...,
     *,
     default_factory: Annotated[
         Union[Callable[[], Any], None],
-        Doc(
-            """
+        Doc("""
             A callable to generate the default value.
 
             This doesn't affect `Path` parameters as the value is always required.
             The parameter is available only for compatibility.
-            """
-        ),
+            """),
     ] = _Unset,
     alias: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             An alternative name for the parameter field.
 
             This will be used to extract the data and for the generated OpenAPI.
             It is particularly useful when you can't use the name you want because it
             is a Python reserved keyword or similar.
-            """
-        ),
+            """),
     ] = None,
     alias_priority: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Priority of the alias. This affects whether an alias generator is used.
-            """
-        ),
+            """),
     ] = _Unset,
     validation_alias: Annotated[
         Union[str, AliasPath, AliasChoices, None],
-        Doc(
-            """
+        Doc("""
             'Whitelist' validation step. The parameter field will be the single one
             allowed by the alias or set of aliases defined.
-            """
-        ),
+            """),
     ] = None,
     serialization_alias: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             'Blacklist' validation step. The vanilla parameter field will be the
             single one of the alias' or set of aliases' fields and all the other
             fields will be ignored at serialization time.
-            """
-        ),
+            """),
     ] = None,
     title: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable title.
 
             Read more about it in the
             [FastAPI docs for Path Parameters and Numeric Validations](https://fastapi.tiangolo.com/tutorial/path-params-numeric-validations/#declare-metadata)
-            """
-        ),
+            """),
     ] = None,
     description: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable description.
-            """
-        ),
+            """),
     ] = None,
     gt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than. If set, value must be greater than this. Only applicable to
             numbers.
 
             Read more about it in the
             [FastAPI docs about Path parameters numeric validations](https://fastapi.tiangolo.com/tutorial/path-params-numeric-validations/#number-validations-greater-than-and-less-than-or-equal)
-            """
-        ),
+            """),
     ] = None,
     ge: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than or equal. If set, value must be greater than or equal to
             this. Only applicable to numbers.
 
             Read more about it in the
             [FastAPI docs about Path parameters numeric validations](https://fastapi.tiangolo.com/tutorial/path-params-numeric-validations/#number-validations-greater-than-and-less-than-or-equal)
-            """
-        ),
+            """),
     ] = None,
     lt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than. If set, value must be less than this. Only applicable to numbers.
 
             Read more about it in the
             [FastAPI docs about Path parameters numeric validations](https://fastapi.tiangolo.com/tutorial/path-params-numeric-validations/#number-validations-greater-than-and-less-than-or-equal)
-            """
-        ),
+            """),
     ] = None,
     le: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than or equal. If set, value must be less than or equal to this.
             Only applicable to numbers.
 
             Read more about it in the
             [FastAPI docs about Path parameters numeric validations](https://fastapi.tiangolo.com/tutorial/path-params-numeric-validations/#number-validations-greater-than-and-less-than-or-equal)
-            """
-        ),
+            """),
     ] = None,
     min_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Minimum length for strings.
-            """
-        ),
+            """),
     ] = None,
     max_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Maximum length for strings.
-            """
-        ),
+            """),
     ] = None,
     pattern: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
     ] = None,
     regex: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
         deprecated(
             "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead."
         ),
     ] = None,
     discriminator: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             Parameter field name for discriminating the type in a tagged union.
-            """
-        ),
+            """),
     ] = None,
     strict: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             If `True`, strict validation is applied to the field.
-            """
-        ),
+            """),
     ] = _Unset,
     multiple_of: Annotated[
         Union[float, None],
-        Doc(
-            """
+        Doc("""
             Value must be a multiple of this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     allow_inf_nan: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             Allow `inf`, `-inf`, `nan`. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     max_digits: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of allow digits for strings.
-            """
-        ),
+            """),
     ] = _Unset,
     decimal_places: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of decimal places allowed for numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     examples: Annotated[
         Optional[list[Any]],
-        Doc(
-            """
+        Doc("""
             Example values for this field.
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/)
-            """
-        ),
+            """),
     ] = None,
     example: Annotated[
         Optional[Any],
@@ -243,8 +197,7 @@ def Path(  # noqa: N802
     ] = _Unset,
     openapi_examples: Annotated[
         Optional[dict[str, Example]],
-        Doc(
-            """
+        Doc("""
             OpenAPI-specific examples.
 
             It will be added to the generated OpenAPI (e.g. visible at `/docs`).
@@ -255,50 +208,39 @@ def Path(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/#using-the-openapi_examples-parameter).
-            """
-        ),
+            """),
     ] = None,
     deprecated: Annotated[
         Union[deprecated, str, bool, None],
-        Doc(
-            """
+        Doc("""
             Mark this parameter field as deprecated.
 
             It will affect the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = None,
     include_in_schema: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             To include (or not) this parameter field in the generated OpenAPI.
             You probably don't need it, but it's available.
 
             This affects the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = True,
     json_schema_extra: Annotated[
         Union[dict[str, Any], None],
-        Doc(
-            """
+        Doc("""
             Any additional JSON schema data.
-            """
-        ),
+            """),
     ] = None,
     **extra: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Include extra fields used by the JSON Schema.
-            """
-        ),
-        deprecated(
-            """
+            """),
+        deprecated("""
             The `extra` kwargs is deprecated. Use `json_schema_extra` instead.
-            """
-        ),
+            """),
     ],
 ) -> Any:
     """
@@ -358,31 +300,26 @@ def Path(  # noqa: N802
 def Query(  # noqa: N802
     default: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Default value if the parameter field is not set.
 
             Read more about it in the
             [FastAPI docs about Query parameters](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#alternative-old-query-as-the-default-value)
-            """
-        ),
+            """),
     ] = Undefined,
     *,
     default_factory: Annotated[
         Union[Callable[[], Any], None],
-        Doc(
-            """
+        Doc("""
             A callable to generate the default value.
 
             This doesn't affect `Path` parameters as the value is always required.
             The parameter is available only for compatibility.
-            """
-        ),
+            """),
     ] = _Unset,
     alias: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             An alternative name for the parameter field.
 
             This will be used to extract the data and for the generated OpenAPI.
@@ -391,207 +328,166 @@ def Query(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs about Query parameters](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#alias-parameters)
-            """
-        ),
+            """),
     ] = None,
     alias_priority: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Priority of the alias. This affects whether an alias generator is used.
-            """
-        ),
+            """),
     ] = _Unset,
     validation_alias: Annotated[
         Union[str, AliasPath, AliasChoices, None],
-        Doc(
-            """
+        Doc("""
             'Whitelist' validation step. The parameter field will be the single one
             allowed by the alias or set of aliases defined.
-            """
-        ),
+            """),
     ] = None,
     serialization_alias: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             'Blacklist' validation step. The vanilla parameter field will be the
             single one of the alias' or set of aliases' fields and all the other
             fields will be ignored at serialization time.
-            """
-        ),
+            """),
     ] = None,
     title: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable title.
 
             Read more about it in the
             [FastAPI docs about Query parameters](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#declare-more-metadata)
-            """
-        ),
+            """),
     ] = None,
     description: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable description.
 
             Read more about it in the
             [FastAPI docs about Query parameters](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#declare-more-metadata)
-            """
-        ),
+            """),
     ] = None,
     gt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than. If set, value must be greater than this. Only applicable to
             numbers.
 
             Read more about it in the
             [FastAPI docs about Path parameters numeric validations](https://fastapi.tiangolo.com/tutorial/path-params-numeric-validations/#number-validations-greater-than-and-less-than-or-equal)
-            """
-        ),
+            """),
     ] = None,
     ge: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than or equal. If set, value must be greater than or equal to
             this. Only applicable to numbers.
 
             Read more about it in the
             [FastAPI docs about Path parameters numeric validations](https://fastapi.tiangolo.com/tutorial/path-params-numeric-validations/#number-validations-greater-than-and-less-than-or-equal)
-            """
-        ),
+            """),
     ] = None,
     lt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than. If set, value must be less than this. Only applicable to numbers.
 
             Read more about it in the
             [FastAPI docs about Path parameters numeric validations](https://fastapi.tiangolo.com/tutorial/path-params-numeric-validations/#number-validations-greater-than-and-less-than-or-equal)
-            """
-        ),
+            """),
     ] = None,
     le: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than or equal. If set, value must be less than or equal to this.
             Only applicable to numbers.
 
             Read more about it in the
             [FastAPI docs about Path parameters numeric validations](https://fastapi.tiangolo.com/tutorial/path-params-numeric-validations/#number-validations-greater-than-and-less-than-or-equal)
-            """
-        ),
+            """),
     ] = None,
     min_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Minimum length for strings.
 
             Read more about it in the
             [FastAPI docs about Query parameters](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/)
-            """
-        ),
+            """),
     ] = None,
     max_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Maximum length for strings.
 
             Read more about it in the
             [FastAPI docs about Query parameters](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/)
-            """
-        ),
+            """),
     ] = None,
     pattern: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
 
             Read more about it in the
             [FastAPI docs about Query parameters](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#add-regular-expressions
-            """
-        ),
+            """),
     ] = None,
     regex: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
         deprecated(
             "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead."
         ),
     ] = None,
     discriminator: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             Parameter field name for discriminating the type in a tagged union.
-            """
-        ),
+            """),
     ] = None,
     strict: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             If `True`, strict validation is applied to the field.
-            """
-        ),
+            """),
     ] = _Unset,
     multiple_of: Annotated[
         Union[float, None],
-        Doc(
-            """
+        Doc("""
             Value must be a multiple of this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     allow_inf_nan: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             Allow `inf`, `-inf`, `nan`. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     max_digits: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of allow digits for strings.
-            """
-        ),
+            """),
     ] = _Unset,
     decimal_places: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of decimal places allowed for numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     examples: Annotated[
         Optional[list[Any]],
-        Doc(
-            """
+        Doc("""
             Example values for this field.
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/)
-            """
-        ),
+            """),
     ] = None,
     example: Annotated[
         Optional[Any],
@@ -602,8 +498,7 @@ def Query(  # noqa: N802
     ] = _Unset,
     openapi_examples: Annotated[
         Optional[dict[str, Example]],
-        Doc(
-            """
+        Doc("""
             OpenAPI-specific examples.
 
             It will be added to the generated OpenAPI (e.g. visible at `/docs`).
@@ -614,26 +509,22 @@ def Query(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/#using-the-openapi_examples-parameter).
-            """
-        ),
+            """),
     ] = None,
     deprecated: Annotated[
         Union[deprecated, str, bool, None],
-        Doc(
-            """
+        Doc("""
             Mark this parameter field as deprecated.
 
             It will affect the generated OpenAPI (e.g. visible at `/docs`).
 
             Read more about it in the
             [FastAPI docs about Query parameters](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#deprecating-parameters)
-            """
-        ),
+            """),
     ] = None,
     include_in_schema: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             To include (or not) this parameter field in the generated OpenAPI.
             You probably don't need it, but it's available.
 
@@ -641,29 +532,22 @@ def Query(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs about Query parameters](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#exclude-parameters-from-openapi
-            """
-        ),
+            """),
     ] = True,
     json_schema_extra: Annotated[
         Union[dict[str, Any], None],
-        Doc(
-            """
+        Doc("""
             Any additional JSON schema data.
-            """
-        ),
+            """),
     ] = None,
     **extra: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Include extra fields used by the JSON Schema.
-            """
-        ),
-        deprecated(
-            """
+            """),
+        deprecated("""
             The `extra` kwargs is deprecated. Use `json_schema_extra` instead.
-            """
-        ),
+            """),
     ],
 ) -> Any:
     return params.Query(
@@ -702,218 +586,170 @@ def Query(  # noqa: N802
 def Header(  # noqa: N802
     default: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Default value if the parameter field is not set.
-            """
-        ),
+            """),
     ] = Undefined,
     *,
     default_factory: Annotated[
         Union[Callable[[], Any], None],
-        Doc(
-            """
+        Doc("""
             A callable to generate the default value.
 
             This doesn't affect `Path` parameters as the value is always required.
             The parameter is available only for compatibility.
-            """
-        ),
+            """),
     ] = _Unset,
     alias: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             An alternative name for the parameter field.
 
             This will be used to extract the data and for the generated OpenAPI.
             It is particularly useful when you can't use the name you want because it
             is a Python reserved keyword or similar.
-            """
-        ),
+            """),
     ] = None,
     alias_priority: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Priority of the alias. This affects whether an alias generator is used.
-            """
-        ),
+            """),
     ] = _Unset,
     validation_alias: Annotated[
         Union[str, AliasPath, AliasChoices, None],
-        Doc(
-            """
+        Doc("""
             'Whitelist' validation step. The parameter field will be the single one
             allowed by the alias or set of aliases defined.
-            """
-        ),
+            """),
     ] = None,
     serialization_alias: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             'Blacklist' validation step. The vanilla parameter field will be the
             single one of the alias' or set of aliases' fields and all the other
             fields will be ignored at serialization time.
-            """
-        ),
+            """),
     ] = None,
     convert_underscores: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             Automatically convert underscores to hyphens in the parameter field name.
 
             Read more about it in the
             [FastAPI docs for Header Parameters](https://fastapi.tiangolo.com/tutorial/header-params/#automatic-conversion)
-            """
-        ),
+            """),
     ] = True,
     title: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable title.
-            """
-        ),
+            """),
     ] = None,
     description: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable description.
-            """
-        ),
+            """),
     ] = None,
     gt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than. If set, value must be greater than this. Only applicable to
             numbers.
-            """
-        ),
+            """),
     ] = None,
     ge: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than or equal. If set, value must be greater than or equal to
             this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     lt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than. If set, value must be less than this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     le: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than or equal. If set, value must be less than or equal to this.
             Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     min_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Minimum length for strings.
-            """
-        ),
+            """),
     ] = None,
     max_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Maximum length for strings.
-            """
-        ),
+            """),
     ] = None,
     pattern: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
     ] = None,
     regex: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
         deprecated(
             "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead."
         ),
     ] = None,
     discriminator: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             Parameter field name for discriminating the type in a tagged union.
-            """
-        ),
+            """),
     ] = None,
     strict: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             If `True`, strict validation is applied to the field.
-            """
-        ),
+            """),
     ] = _Unset,
     multiple_of: Annotated[
         Union[float, None],
-        Doc(
-            """
+        Doc("""
             Value must be a multiple of this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     allow_inf_nan: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             Allow `inf`, `-inf`, `nan`. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     max_digits: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of allow digits for strings.
-            """
-        ),
+            """),
     ] = _Unset,
     decimal_places: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of decimal places allowed for numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     examples: Annotated[
         Optional[list[Any]],
-        Doc(
-            """
+        Doc("""
             Example values for this field.
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/)
-            """
-        ),
+            """),
     ] = None,
     example: Annotated[
         Optional[Any],
@@ -924,8 +760,7 @@ def Header(  # noqa: N802
     ] = _Unset,
     openapi_examples: Annotated[
         Optional[dict[str, Example]],
-        Doc(
-            """
+        Doc("""
             OpenAPI-specific examples.
 
             It will be added to the generated OpenAPI (e.g. visible at `/docs`).
@@ -936,50 +771,39 @@ def Header(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/#using-the-openapi_examples-parameter).
-            """
-        ),
+            """),
     ] = None,
     deprecated: Annotated[
         Union[deprecated, str, bool, None],
-        Doc(
-            """
+        Doc("""
             Mark this parameter field as deprecated.
 
             It will affect the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = None,
     include_in_schema: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             To include (or not) this parameter field in the generated OpenAPI.
             You probably don't need it, but it's available.
 
             This affects the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = True,
     json_schema_extra: Annotated[
         Union[dict[str, Any], None],
-        Doc(
-            """
+        Doc("""
             Any additional JSON schema data.
-            """
-        ),
+            """),
     ] = None,
     **extra: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Include extra fields used by the JSON Schema.
-            """
-        ),
-        deprecated(
-            """
+            """),
+        deprecated("""
             The `extra` kwargs is deprecated. Use `json_schema_extra` instead.
-            """
-        ),
+            """),
     ],
 ) -> Any:
     return params.Header(
@@ -1019,207 +843,161 @@ def Header(  # noqa: N802
 def Cookie(  # noqa: N802
     default: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Default value if the parameter field is not set.
-            """
-        ),
+            """),
     ] = Undefined,
     *,
     default_factory: Annotated[
         Union[Callable[[], Any], None],
-        Doc(
-            """
+        Doc("""
             A callable to generate the default value.
 
             This doesn't affect `Path` parameters as the value is always required.
             The parameter is available only for compatibility.
-            """
-        ),
+            """),
     ] = _Unset,
     alias: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             An alternative name for the parameter field.
 
             This will be used to extract the data and for the generated OpenAPI.
             It is particularly useful when you can't use the name you want because it
             is a Python reserved keyword or similar.
-            """
-        ),
+            """),
     ] = None,
     alias_priority: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Priority of the alias. This affects whether an alias generator is used.
-            """
-        ),
+            """),
     ] = _Unset,
     validation_alias: Annotated[
         Union[str, AliasPath, AliasChoices, None],
-        Doc(
-            """
+        Doc("""
             'Whitelist' validation step. The parameter field will be the single one
             allowed by the alias or set of aliases defined.
-            """
-        ),
+            """),
     ] = None,
     serialization_alias: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             'Blacklist' validation step. The vanilla parameter field will be the
             single one of the alias' or set of aliases' fields and all the other
             fields will be ignored at serialization time.
-            """
-        ),
+            """),
     ] = None,
     title: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable title.
-            """
-        ),
+            """),
     ] = None,
     description: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable description.
-            """
-        ),
+            """),
     ] = None,
     gt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than. If set, value must be greater than this. Only applicable to
             numbers.
-            """
-        ),
+            """),
     ] = None,
     ge: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than or equal. If set, value must be greater than or equal to
             this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     lt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than. If set, value must be less than this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     le: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than or equal. If set, value must be less than or equal to this.
             Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     min_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Minimum length for strings.
-            """
-        ),
+            """),
     ] = None,
     max_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Maximum length for strings.
-            """
-        ),
+            """),
     ] = None,
     pattern: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
     ] = None,
     regex: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
         deprecated(
             "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead."
         ),
     ] = None,
     discriminator: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             Parameter field name for discriminating the type in a tagged union.
-            """
-        ),
+            """),
     ] = None,
     strict: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             If `True`, strict validation is applied to the field.
-            """
-        ),
+            """),
     ] = _Unset,
     multiple_of: Annotated[
         Union[float, None],
-        Doc(
-            """
+        Doc("""
             Value must be a multiple of this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     allow_inf_nan: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             Allow `inf`, `-inf`, `nan`. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     max_digits: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of allow digits for strings.
-            """
-        ),
+            """),
     ] = _Unset,
     decimal_places: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of decimal places allowed for numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     examples: Annotated[
         Optional[list[Any]],
-        Doc(
-            """
+        Doc("""
             Example values for this field.
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/)
-            """
-        ),
+            """),
     ] = None,
     example: Annotated[
         Optional[Any],
@@ -1230,8 +1008,7 @@ def Cookie(  # noqa: N802
     ] = _Unset,
     openapi_examples: Annotated[
         Optional[dict[str, Example]],
-        Doc(
-            """
+        Doc("""
             OpenAPI-specific examples.
 
             It will be added to the generated OpenAPI (e.g. visible at `/docs`).
@@ -1242,50 +1019,39 @@ def Cookie(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/#using-the-openapi_examples-parameter).
-            """
-        ),
+            """),
     ] = None,
     deprecated: Annotated[
         Union[deprecated, str, bool, None],
-        Doc(
-            """
+        Doc("""
             Mark this parameter field as deprecated.
 
             It will affect the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = None,
     include_in_schema: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             To include (or not) this parameter field in the generated OpenAPI.
             You probably don't need it, but it's available.
 
             This affects the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = True,
     json_schema_extra: Annotated[
         Union[dict[str, Any], None],
-        Doc(
-            """
+        Doc("""
             Any additional JSON schema data.
-            """
-        ),
+            """),
     ] = None,
     **extra: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Include extra fields used by the JSON Schema.
-            """
-        ),
-        deprecated(
-            """
+            """),
+        deprecated("""
             The `extra` kwargs is deprecated. Use `json_schema_extra` instead.
-            """
-        ),
+            """),
     ],
 ) -> Any:
     return params.Cookie(
@@ -1324,28 +1090,23 @@ def Cookie(  # noqa: N802
 def Body(  # noqa: N802
     default: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Default value if the parameter field is not set.
-            """
-        ),
+            """),
     ] = Undefined,
     *,
     default_factory: Annotated[
         Union[Callable[[], Any], None],
-        Doc(
-            """
+        Doc("""
             A callable to generate the default value.
 
             This doesn't affect `Path` parameters as the value is always required.
             The parameter is available only for compatibility.
-            """
-        ),
+            """),
     ] = _Unset,
     embed: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             When `embed` is `True`, the parameter will be expected in a JSON body as a
             key instead of being the JSON body itself.
 
@@ -1353,201 +1114,156 @@ def Body(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for Body - Multiple Parameters](https://fastapi.tiangolo.com/tutorial/body-multiple-params/#embed-a-single-body-parameter).
-            """
-        ),
+            """),
     ] = None,
     media_type: Annotated[
         str,
-        Doc(
-            """
+        Doc("""
             The media type of this parameter field. Changing it would affect the
             generated OpenAPI, but currently it doesn't affect the parsing of the data.
-            """
-        ),
+            """),
     ] = "application/json",
     alias: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             An alternative name for the parameter field.
 
             This will be used to extract the data and for the generated OpenAPI.
             It is particularly useful when you can't use the name you want because it
             is a Python reserved keyword or similar.
-            """
-        ),
+            """),
     ] = None,
     alias_priority: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Priority of the alias. This affects whether an alias generator is used.
-            """
-        ),
+            """),
     ] = _Unset,
     validation_alias: Annotated[
         Union[str, AliasPath, AliasChoices, None],
-        Doc(
-            """
+        Doc("""
             'Whitelist' validation step. The parameter field will be the single one
             allowed by the alias or set of aliases defined.
-            """
-        ),
+            """),
     ] = None,
     serialization_alias: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             'Blacklist' validation step. The vanilla parameter field will be the
             single one of the alias' or set of aliases' fields and all the other
             fields will be ignored at serialization time.
-            """
-        ),
+            """),
     ] = None,
     title: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable title.
-            """
-        ),
+            """),
     ] = None,
     description: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable description.
-            """
-        ),
+            """),
     ] = None,
     gt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than. If set, value must be greater than this. Only applicable to
             numbers.
-            """
-        ),
+            """),
     ] = None,
     ge: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than or equal. If set, value must be greater than or equal to
             this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     lt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than. If set, value must be less than this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     le: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than or equal. If set, value must be less than or equal to this.
             Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     min_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Minimum length for strings.
-            """
-        ),
+            """),
     ] = None,
     max_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Maximum length for strings.
-            """
-        ),
+            """),
     ] = None,
     pattern: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
     ] = None,
     regex: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
         deprecated(
             "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead."
         ),
     ] = None,
     discriminator: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             Parameter field name for discriminating the type in a tagged union.
-            """
-        ),
+            """),
     ] = None,
     strict: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             If `True`, strict validation is applied to the field.
-            """
-        ),
+            """),
     ] = _Unset,
     multiple_of: Annotated[
         Union[float, None],
-        Doc(
-            """
+        Doc("""
             Value must be a multiple of this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     allow_inf_nan: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             Allow `inf`, `-inf`, `nan`. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     max_digits: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of allow digits for strings.
-            """
-        ),
+            """),
     ] = _Unset,
     decimal_places: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of decimal places allowed for numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     examples: Annotated[
         Optional[list[Any]],
-        Doc(
-            """
+        Doc("""
             Example values for this field.
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/)
-            """
-        ),
+            """),
     ] = None,
     example: Annotated[
         Optional[Any],
@@ -1558,8 +1274,7 @@ def Body(  # noqa: N802
     ] = _Unset,
     openapi_examples: Annotated[
         Optional[dict[str, Example]],
-        Doc(
-            """
+        Doc("""
             OpenAPI-specific examples.
 
             It will be added to the generated OpenAPI (e.g. visible at `/docs`).
@@ -1570,50 +1285,39 @@ def Body(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/#using-the-openapi_examples-parameter).
-            """
-        ),
+            """),
     ] = None,
     deprecated: Annotated[
         Union[deprecated, str, bool, None],
-        Doc(
-            """
+        Doc("""
             Mark this parameter field as deprecated.
 
             It will affect the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = None,
     include_in_schema: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             To include (or not) this parameter field in the generated OpenAPI.
             You probably don't need it, but it's available.
 
             This affects the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = True,
     json_schema_extra: Annotated[
         Union[dict[str, Any], None],
-        Doc(
-            """
+        Doc("""
             Any additional JSON schema data.
-            """
-        ),
+            """),
     ] = None,
     **extra: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Include extra fields used by the JSON Schema.
-            """
-        ),
-        deprecated(
-            """
+            """),
+        deprecated("""
             The `extra` kwargs is deprecated. Use `json_schema_extra` instead.
-            """
-        ),
+            """),
     ],
 ) -> Any:
     return params.Body(
@@ -1654,216 +1358,168 @@ def Body(  # noqa: N802
 def Form(  # noqa: N802
     default: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Default value if the parameter field is not set.
-            """
-        ),
+            """),
     ] = Undefined,
     *,
     default_factory: Annotated[
         Union[Callable[[], Any], None],
-        Doc(
-            """
+        Doc("""
             A callable to generate the default value.
 
             This doesn't affect `Path` parameters as the value is always required.
             The parameter is available only for compatibility.
-            """
-        ),
+            """),
     ] = _Unset,
     media_type: Annotated[
         str,
-        Doc(
-            """
+        Doc("""
             The media type of this parameter field. Changing it would affect the
             generated OpenAPI, but currently it doesn't affect the parsing of the data.
-            """
-        ),
+            """),
     ] = "application/x-www-form-urlencoded",
     alias: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             An alternative name for the parameter field.
 
             This will be used to extract the data and for the generated OpenAPI.
             It is particularly useful when you can't use the name you want because it
             is a Python reserved keyword or similar.
-            """
-        ),
+            """),
     ] = None,
     alias_priority: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Priority of the alias. This affects whether an alias generator is used.
-            """
-        ),
+            """),
     ] = _Unset,
     validation_alias: Annotated[
         Union[str, AliasPath, AliasChoices, None],
-        Doc(
-            """
+        Doc("""
             'Whitelist' validation step. The parameter field will be the single one
             allowed by the alias or set of aliases defined.
-            """
-        ),
+            """),
     ] = None,
     serialization_alias: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             'Blacklist' validation step. The vanilla parameter field will be the
             single one of the alias' or set of aliases' fields and all the other
             fields will be ignored at serialization time.
-            """
-        ),
+            """),
     ] = None,
     title: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable title.
-            """
-        ),
+            """),
     ] = None,
     description: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable description.
-            """
-        ),
+            """),
     ] = None,
     gt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than. If set, value must be greater than this. Only applicable to
             numbers.
-            """
-        ),
+            """),
     ] = None,
     ge: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than or equal. If set, value must be greater than or equal to
             this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     lt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than. If set, value must be less than this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     le: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than or equal. If set, value must be less than or equal to this.
             Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     min_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Minimum length for strings.
-            """
-        ),
+            """),
     ] = None,
     max_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Maximum length for strings.
-            """
-        ),
+            """),
     ] = None,
     pattern: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
     ] = None,
     regex: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
         deprecated(
             "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead."
         ),
     ] = None,
     discriminator: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             Parameter field name for discriminating the type in a tagged union.
-            """
-        ),
+            """),
     ] = None,
     strict: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             If `True`, strict validation is applied to the field.
-            """
-        ),
+            """),
     ] = _Unset,
     multiple_of: Annotated[
         Union[float, None],
-        Doc(
-            """
+        Doc("""
             Value must be a multiple of this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     allow_inf_nan: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             Allow `inf`, `-inf`, `nan`. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     max_digits: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of allow digits for strings.
-            """
-        ),
+            """),
     ] = _Unset,
     decimal_places: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of decimal places allowed for numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     examples: Annotated[
         Optional[list[Any]],
-        Doc(
-            """
+        Doc("""
             Example values for this field.
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/)
-            """
-        ),
+            """),
     ] = None,
     example: Annotated[
         Optional[Any],
@@ -1874,8 +1530,7 @@ def Form(  # noqa: N802
     ] = _Unset,
     openapi_examples: Annotated[
         Optional[dict[str, Example]],
-        Doc(
-            """
+        Doc("""
             OpenAPI-specific examples.
 
             It will be added to the generated OpenAPI (e.g. visible at `/docs`).
@@ -1886,50 +1541,39 @@ def Form(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/#using-the-openapi_examples-parameter).
-            """
-        ),
+            """),
     ] = None,
     deprecated: Annotated[
         Union[deprecated, str, bool, None],
-        Doc(
-            """
+        Doc("""
             Mark this parameter field as deprecated.
 
             It will affect the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = None,
     include_in_schema: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             To include (or not) this parameter field in the generated OpenAPI.
             You probably don't need it, but it's available.
 
             This affects the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = True,
     json_schema_extra: Annotated[
         Union[dict[str, Any], None],
-        Doc(
-            """
+        Doc("""
             Any additional JSON schema data.
-            """
-        ),
+            """),
     ] = None,
     **extra: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Include extra fields used by the JSON Schema.
-            """
-        ),
-        deprecated(
-            """
+            """),
+        deprecated("""
             The `extra` kwargs is deprecated. Use `json_schema_extra` instead.
-            """
-        ),
+            """),
     ],
 ) -> Any:
     return params.Form(
@@ -1969,216 +1613,168 @@ def Form(  # noqa: N802
 def File(  # noqa: N802
     default: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Default value if the parameter field is not set.
-            """
-        ),
+            """),
     ] = Undefined,
     *,
     default_factory: Annotated[
         Union[Callable[[], Any], None],
-        Doc(
-            """
+        Doc("""
             A callable to generate the default value.
 
             This doesn't affect `Path` parameters as the value is always required.
             The parameter is available only for compatibility.
-            """
-        ),
+            """),
     ] = _Unset,
     media_type: Annotated[
         str,
-        Doc(
-            """
+        Doc("""
             The media type of this parameter field. Changing it would affect the
             generated OpenAPI, but currently it doesn't affect the parsing of the data.
-            """
-        ),
+            """),
     ] = "multipart/form-data",
     alias: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             An alternative name for the parameter field.
 
             This will be used to extract the data and for the generated OpenAPI.
             It is particularly useful when you can't use the name you want because it
             is a Python reserved keyword or similar.
-            """
-        ),
+            """),
     ] = None,
     alias_priority: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Priority of the alias. This affects whether an alias generator is used.
-            """
-        ),
+            """),
     ] = _Unset,
     validation_alias: Annotated[
         Union[str, AliasPath, AliasChoices, None],
-        Doc(
-            """
+        Doc("""
             'Whitelist' validation step. The parameter field will be the single one
             allowed by the alias or set of aliases defined.
-            """
-        ),
+            """),
     ] = None,
     serialization_alias: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             'Blacklist' validation step. The vanilla parameter field will be the
             single one of the alias' or set of aliases' fields and all the other
             fields will be ignored at serialization time.
-            """
-        ),
+            """),
     ] = None,
     title: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable title.
-            """
-        ),
+            """),
     ] = None,
     description: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             Human-readable description.
-            """
-        ),
+            """),
     ] = None,
     gt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than. If set, value must be greater than this. Only applicable to
             numbers.
-            """
-        ),
+            """),
     ] = None,
     ge: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Greater than or equal. If set, value must be greater than or equal to
             this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     lt: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than. If set, value must be less than this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     le: Annotated[
         Optional[float],
-        Doc(
-            """
+        Doc("""
             Less than or equal. If set, value must be less than or equal to this.
             Only applicable to numbers.
-            """
-        ),
+            """),
     ] = None,
     min_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Minimum length for strings.
-            """
-        ),
+            """),
     ] = None,
     max_length: Annotated[
         Optional[int],
-        Doc(
-            """
+        Doc("""
             Maximum length for strings.
-            """
-        ),
+            """),
     ] = None,
     pattern: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
     ] = None,
     regex: Annotated[
         Optional[str],
-        Doc(
-            """
+        Doc("""
             RegEx pattern for strings.
-            """
-        ),
+            """),
         deprecated(
             "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead."
         ),
     ] = None,
     discriminator: Annotated[
         Union[str, None],
-        Doc(
-            """
+        Doc("""
             Parameter field name for discriminating the type in a tagged union.
-            """
-        ),
+            """),
     ] = None,
     strict: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             If `True`, strict validation is applied to the field.
-            """
-        ),
+            """),
     ] = _Unset,
     multiple_of: Annotated[
         Union[float, None],
-        Doc(
-            """
+        Doc("""
             Value must be a multiple of this. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     allow_inf_nan: Annotated[
         Union[bool, None],
-        Doc(
-            """
+        Doc("""
             Allow `inf`, `-inf`, `nan`. Only applicable to numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     max_digits: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of allow digits for strings.
-            """
-        ),
+            """),
     ] = _Unset,
     decimal_places: Annotated[
         Union[int, None],
-        Doc(
-            """
+        Doc("""
             Maximum number of decimal places allowed for numbers.
-            """
-        ),
+            """),
     ] = _Unset,
     examples: Annotated[
         Optional[list[Any]],
-        Doc(
-            """
+        Doc("""
             Example values for this field.
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/)
-            """
-        ),
+            """),
     ] = None,
     example: Annotated[
         Optional[Any],
@@ -2189,8 +1785,7 @@ def File(  # noqa: N802
     ] = _Unset,
     openapi_examples: Annotated[
         Optional[dict[str, Example]],
-        Doc(
-            """
+        Doc("""
             OpenAPI-specific examples.
 
             It will be added to the generated OpenAPI (e.g. visible at `/docs`).
@@ -2201,50 +1796,39 @@ def File(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for Declare Request Example Data](https://fastapi.tiangolo.com/tutorial/schema-extra-example/#using-the-openapi_examples-parameter).
-            """
-        ),
+            """),
     ] = None,
     deprecated: Annotated[
         Union[deprecated, str, bool, None],
-        Doc(
-            """
+        Doc("""
             Mark this parameter field as deprecated.
 
             It will affect the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = None,
     include_in_schema: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             To include (or not) this parameter field in the generated OpenAPI.
             You probably don't need it, but it's available.
 
             This affects the generated OpenAPI (e.g. visible at `/docs`).
-            """
-        ),
+            """),
     ] = True,
     json_schema_extra: Annotated[
         Union[dict[str, Any], None],
-        Doc(
-            """
+        Doc("""
             Any additional JSON schema data.
-            """
-        ),
+            """),
     ] = None,
     **extra: Annotated[
         Any,
-        Doc(
-            """
+        Doc("""
             Include extra fields used by the JSON Schema.
-            """
-        ),
-        deprecated(
-            """
+            """),
+        deprecated("""
             The `extra` kwargs is deprecated. Use `json_schema_extra` instead.
-            """
-        ),
+            """),
     ],
 ) -> Any:
     return params.File(
@@ -2284,8 +1868,7 @@ def File(  # noqa: N802
 def Depends(  # noqa: N802
     dependency: Annotated[
         Optional[Callable[..., Any]],
-        Doc(
-            """
+        Doc("""
             A "dependable" callable (like a function).
 
             Don't call it directly, FastAPI will call it for you, just pass the object
@@ -2293,14 +1876,12 @@ def Depends(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for Dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/)
-            """
-        ),
+            """),
     ] = None,
     *,
     use_cache: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             By default, after a dependency is called the first time in a request, if
             the dependency is declared again for the rest of the request (for example
             if the dependency is needed by several dependencies), the value will be
@@ -2311,13 +1892,11 @@ def Depends(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs about sub-dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies/#using-the-same-dependency-multiple-times)
-            """
-        ),
+            """),
     ] = True,
     scope: Annotated[
         Union[Literal["function", "request"], None],
-        Doc(
-            """
+        Doc("""
             Mainly for dependencies with `yield`, define when the dependency function
             should start (the code before `yield`) and when it should end (the code
             after `yield`).
@@ -2334,8 +1913,7 @@ def Depends(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for FastAPI Dependencies with yield](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#early-exit-and-scope)
-            """
-        ),
+            """),
     ] = None,
 ) -> Any:
     """
@@ -2373,8 +1951,7 @@ def Depends(  # noqa: N802
 def Security(  # noqa: N802
     dependency: Annotated[
         Optional[Callable[..., Any]],
-        Doc(
-            """
+        Doc("""
             A "dependable" callable (like a function).
 
             Don't call it directly, FastAPI will call it for you, just pass the object
@@ -2382,14 +1959,12 @@ def Security(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs for Dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/)
-            """
-        ),
+            """),
     ] = None,
     *,
     scopes: Annotated[
         Optional[Sequence[str]],
-        Doc(
-            """
+        Doc("""
             OAuth2 scopes required for the *path operation* that uses this Security
             dependency.
 
@@ -2402,13 +1977,11 @@ def Security(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs about OAuth2 scopes](https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/)
-            """
-        ),
+            """),
     ] = None,
     use_cache: Annotated[
         bool,
-        Doc(
-            """
+        Doc("""
             By default, after a dependency is called the first time in a request, if
             the dependency is declared again for the rest of the request (for example
             if the dependency is needed by several dependencies), the value will be
@@ -2419,8 +1992,7 @@ def Security(  # noqa: N802
 
             Read more about it in the
             [FastAPI docs about sub-dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies/#using-the-same-dependency-multiple-times)
-            """
-        ),
+            """),
     ] = True,
 ) -> Any:
     """

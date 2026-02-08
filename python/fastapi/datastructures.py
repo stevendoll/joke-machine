@@ -69,11 +69,9 @@ class UploadFile(StarletteUploadFile):
         self,
         data: Annotated[
             bytes,
-            Doc(
-                """
+            Doc("""
                 The bytes to write to the file.
-                """
-            ),
+                """),
         ],
     ) -> None:
         """
@@ -89,11 +87,9 @@ class UploadFile(StarletteUploadFile):
         self,
         size: Annotated[
             int,
-            Doc(
-                """
+            Doc("""
                 The number of bytes to read from the file.
-                """
-            ),
+                """),
         ] = -1,
     ) -> bytes:
         """
@@ -107,11 +103,9 @@ class UploadFile(StarletteUploadFile):
         self,
         offset: Annotated[
             int,
-            Doc(
-                """
+            Doc("""
                 The position in bytes to seek to in the file.
-                """
-            ),
+                """),
         ],
     ) -> None:
         """

@@ -24,36 +24,29 @@ class OpenIdConnect(SecurityBase):
         *,
         openIdConnectUrl: Annotated[
             str,
-            Doc(
-                """
+            Doc("""
             The OpenID Connect URL.
-            """
-            ),
+            """),
         ],
         scheme_name: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme name.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         description: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme description.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         auto_error: Annotated[
             bool,
-            Doc(
-                """
+            Doc("""
                 By default, if no HTTP Authorization header is provided, required for
                 OpenID Connect authentication, it will automatically cancel the request
                 and send the client an error.
@@ -67,8 +60,7 @@ class OpenIdConnect(SecurityBase):
                 It is also useful when you want to have authentication that can be
                 provided in one of multiple optional ways (for example, with OpenID
                 Connect or in a cookie).
-                """
-            ),
+                """),
         ] = True,
     ):
         self.model = OpenIdConnectModel(

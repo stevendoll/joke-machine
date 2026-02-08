@@ -62,8 +62,7 @@ class OAuth2PasswordRequestForm:
         grant_type: Annotated[
             Union[str, None],
             Form(pattern="^password$"),
-            Doc(
-                """
+            Doc("""
                 The OAuth2 spec says it is required and MUST be the fixed string
                 "password". Nevertheless, this dependency class is permissive and
                 allows not passing it. If you want to enforce it, use instead the
@@ -71,40 +70,34 @@ class OAuth2PasswordRequestForm:
 
                 Read more about it in the
                 [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).
-                """
-            ),
+                """),
         ] = None,
         username: Annotated[
             str,
             Form(),
-            Doc(
-                """
+            Doc("""
                 `username` string. The OAuth2 spec requires the exact field name
                 `username`.
 
                 Read more about it in the
                 [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).
-                """
-            ),
+                """),
         ],
         password: Annotated[
             str,
             Form(json_schema_extra={"format": "password"}),
-            Doc(
-                """
+            Doc("""
                 `password` string. The OAuth2 spec requires the exact field name
                 `password`.
 
                 Read more about it in the
                 [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).
-                """
-            ),
+                """),
         ],
         scope: Annotated[
             str,
             Form(),
-            Doc(
-                """
+            Doc("""
                 A single string with actually several scopes separated by spaces. Each
                 scope is also a string.
 
@@ -124,31 +117,26 @@ class OAuth2PasswordRequestForm:
 
                 Read more about it in the
                 [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).
-                """
-            ),
+                """),
         ] = "",
         client_id: Annotated[
             Union[str, None],
             Form(),
-            Doc(
-                """
+            Doc("""
                 If there's a `client_id`, it can be sent as part of the form fields.
                 But the OAuth2 specification recommends sending the `client_id` and
                 `client_secret` (if any) using HTTP Basic auth.
-                """
-            ),
+                """),
         ] = None,
         client_secret: Annotated[
             Union[str, None],
             Form(json_schema_extra={"format": "password"}),
-            Doc(
-                """
+            Doc("""
                 If there's a `client_password` (and a `client_id`), they can be sent
                 as part of the form fields. But the OAuth2 specification recommends
                 sending the `client_id` and `client_secret` (if any) using HTTP Basic
                 auth.
-                """
-            ),
+                """),
         ] = None,
     ):
         self.grant_type = grant_type
@@ -228,8 +216,7 @@ class OAuth2PasswordRequestFormStrict(OAuth2PasswordRequestForm):
         grant_type: Annotated[
             str,
             Form(pattern="^password$"),
-            Doc(
-                """
+            Doc("""
                 The OAuth2 spec says it is required and MUST be the fixed string
                 "password". This dependency is strict about it. If you want to be
                 permissive, use instead the `OAuth2PasswordRequestForm` dependency
@@ -237,40 +224,34 @@ class OAuth2PasswordRequestFormStrict(OAuth2PasswordRequestForm):
 
                 Read more about it in the
                 [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).
-                """
-            ),
+                """),
         ],
         username: Annotated[
             str,
             Form(),
-            Doc(
-                """
+            Doc("""
                 `username` string. The OAuth2 spec requires the exact field name
                 `username`.
 
                 Read more about it in the
                 [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).
-                """
-            ),
+                """),
         ],
         password: Annotated[
             str,
             Form(),
-            Doc(
-                """
+            Doc("""
                 `password` string. The OAuth2 spec requires the exact field name
                 `password`.
 
                 Read more about it in the
                 [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).
-                """
-            ),
+                """),
         ],
         scope: Annotated[
             str,
             Form(),
-            Doc(
-                """
+            Doc("""
                 A single string with actually several scopes separated by spaces. Each
                 scope is also a string.
 
@@ -290,31 +271,26 @@ class OAuth2PasswordRequestFormStrict(OAuth2PasswordRequestForm):
 
                 Read more about it in the
                 [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).
-                """
-            ),
+                """),
         ] = "",
         client_id: Annotated[
             Union[str, None],
             Form(),
-            Doc(
-                """
+            Doc("""
                 If there's a `client_id`, it can be sent as part of the form fields.
                 But the OAuth2 specification recommends sending the `client_id` and
                 `client_secret` (if any) using HTTP Basic auth.
-                """
-            ),
+                """),
         ] = None,
         client_secret: Annotated[
             Union[str, None],
             Form(),
-            Doc(
-                """
+            Doc("""
                 If there's a `client_password` (and a `client_id`), they can be sent
                 as part of the form fields. But the OAuth2 specification recommends
                 sending the `client_id` and `client_secret` (if any) using HTTP Basic
                 auth.
-                """
-            ),
+                """),
         ] = None,
     ):
         super().__init__(
@@ -345,36 +321,29 @@ class OAuth2(SecurityBase):
         *,
         flows: Annotated[
             Union[OAuthFlowsModel, dict[str, dict[str, Any]]],
-            Doc(
-                """
+            Doc("""
                 The dictionary of OAuth2 flows.
-                """
-            ),
+                """),
         ] = OAuthFlowsModel(),
         scheme_name: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme name.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         description: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme description.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         auto_error: Annotated[
             bool,
-            Doc(
-                """
+            Doc("""
                 By default, if no HTTP Authorization header is provided, required for
                 OAuth2 authentication, it will automatically cancel the request and
                 send the client an error.
@@ -388,8 +357,7 @@ class OAuth2(SecurityBase):
                 It is also useful when you want to have authentication that can be
                 provided in one of multiple optional ways (for example, with OAuth2
                 or in a cookie).
-                """
-            ),
+                """),
         ] = True,
     ):
         self.model = OAuth2Model(
@@ -443,52 +411,43 @@ class OAuth2PasswordBearer(OAuth2):
         self,
         tokenUrl: Annotated[
             str,
-            Doc(
-                """
+            Doc("""
                 The URL to obtain the OAuth2 token. This would be the *path operation*
                 that has `OAuth2PasswordRequestForm` as a dependency.
 
                 Read more about it in the
                 [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).
-                """
-            ),
+                """),
         ],
         scheme_name: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme name.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         scopes: Annotated[
             Optional[dict[str, str]],
-            Doc(
-                """
+            Doc("""
                 The OAuth2 scopes that would be required by the *path operations* that
                 use this dependency.
 
                 Read more about it in the
                 [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).
-                """
-            ),
+                """),
         ] = None,
         description: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme description.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         auto_error: Annotated[
             bool,
-            Doc(
-                """
+            Doc("""
                 By default, if no HTTP Authorization header is provided, required for
                 OAuth2 authentication, it will automatically cancel the request and
                 send the client an error.
@@ -502,16 +461,13 @@ class OAuth2PasswordBearer(OAuth2):
                 It is also useful when you want to have authentication that can be
                 provided in one of multiple optional ways (for example, with OAuth2
                 or in a cookie).
-                """
-            ),
+                """),
         ] = True,
         refreshUrl: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 The URL to refresh the token and obtain a new one.
-                """
-            ),
+                """),
         ] = None,
     ):
         if not scopes:
@@ -555,53 +511,42 @@ class OAuth2AuthorizationCodeBearer(OAuth2):
         authorizationUrl: str,
         tokenUrl: Annotated[
             str,
-            Doc(
-                """
+            Doc("""
                 The URL to obtain the OAuth2 token.
-                """
-            ),
+                """),
         ],
         refreshUrl: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 The URL to refresh the token and obtain a new one.
-                """
-            ),
+                """),
         ] = None,
         scheme_name: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme name.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         scopes: Annotated[
             Optional[dict[str, str]],
-            Doc(
-                """
+            Doc("""
                 The OAuth2 scopes that would be required by the *path operations* that
                 use this dependency.
-                """
-            ),
+                """),
         ] = None,
         description: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme description.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         auto_error: Annotated[
             bool,
-            Doc(
-                """
+            Doc("""
                 By default, if no HTTP Authorization header is provided, required for
                 OAuth2 authentication, it will automatically cancel the request and
                 send the client an error.
@@ -615,8 +560,7 @@ class OAuth2AuthorizationCodeBearer(OAuth2):
                 It is also useful when you want to have authentication that can be
                 provided in one of multiple optional ways (for example, with OAuth2
                 or in a cookie).
-                """
-            ),
+                """),
         ] = True,
     ):
         if not scopes:
@@ -667,27 +611,23 @@ class SecurityScopes:
         self,
         scopes: Annotated[
             Optional[list[str]],
-            Doc(
-                """
+            Doc("""
                 This will be filled by FastAPI.
-                """
-            ),
+                """),
         ] = None,
     ):
         self.scopes: Annotated[
             list[str],
-            Doc(
-                """
+            Doc("""
                 The list of all the scopes required by dependencies.
-                """
-            ),
-        ] = scopes or []
+                """),
+        ] = (
+            scopes or []
+        )
         self.scope_str: Annotated[
             str,
-            Doc(
-                """
+            Doc("""
                 All the scopes required by all the dependencies in a single string
                 separated by spaces, as defined in the OAuth2 specification.
-                """
-            ),
+                """),
         ] = " ".join(self.scopes)

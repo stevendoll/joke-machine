@@ -91,28 +91,23 @@ class APIKeyQuery(APIKeyBase):
         ],
         scheme_name: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme name.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         description: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme description.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         auto_error: Annotated[
             bool,
-            Doc(
-                """
+            Doc("""
                 By default, if the query parameter is not provided, `APIKeyQuery` will
                 automatically cancel the request and send the client an error.
 
@@ -125,8 +120,7 @@ class APIKeyQuery(APIKeyBase):
                 It is also useful when you want to have authentication that can be
                 provided in one of multiple optional ways (for example, in a query
                 parameter or in an HTTP Bearer token).
-                """
-            ),
+                """),
         ] = True,
     ):
         super().__init__(
@@ -180,28 +174,23 @@ class APIKeyHeader(APIKeyBase):
         name: Annotated[str, Doc("Header name.")],
         scheme_name: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme name.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         description: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme description.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         auto_error: Annotated[
             bool,
-            Doc(
-                """
+            Doc("""
                 By default, if the header is not provided, `APIKeyHeader` will
                 automatically cancel the request and send the client an error.
 
@@ -213,8 +202,7 @@ class APIKeyHeader(APIKeyBase):
                 It is also useful when you want to have authentication that can be
                 provided in one of multiple optional ways (for example, in a header or
                 in an HTTP Bearer token).
-                """
-            ),
+                """),
         ] = True,
     ):
         super().__init__(
@@ -268,28 +256,23 @@ class APIKeyCookie(APIKeyBase):
         name: Annotated[str, Doc("Cookie name.")],
         scheme_name: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme name.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         description: Annotated[
             Optional[str],
-            Doc(
-                """
+            Doc("""
                 Security scheme description.
 
                 It will be included in the generated OpenAPI (e.g. visible at `/docs`).
-                """
-            ),
+                """),
         ] = None,
         auto_error: Annotated[
             bool,
-            Doc(
-                """
+            Doc("""
                 By default, if the cookie is not provided, `APIKeyCookie` will
                 automatically cancel the request and send the client an error.
 
@@ -301,8 +284,7 @@ class APIKeyCookie(APIKeyBase):
                 It is also useful when you want to have authentication that can be
                 provided in one of multiple optional ways (for example, in a cookie or
                 in an HTTP Bearer token).
-                """
-            ),
+                """),
         ] = True,
     ):
         super().__init__(
