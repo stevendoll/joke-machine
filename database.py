@@ -224,8 +224,8 @@ class JokeDatabase:
                     # Always generate a new ID for each attempt
                     joke.id = str(uuid.uuid4())
 
-                    # Set created_at if not provided
-                    if not joke.created_at:
+                    # Set created_at if not provided (for new jokes)
+                    if joke.created_at is None:
                         joke.created_at = datetime.now()
 
                     # Insert joke first
@@ -306,7 +306,7 @@ class JokeDatabase:
                     id=row["id"],
                     category=JokeCategory(row["category"]),
                     rating=row["rating"],
-                    created_at=row["created_at"],
+                    created_at=row["created_at"] or datetime.now(),
                     steps=steps,
                 )
             return None
@@ -366,7 +366,7 @@ class JokeDatabase:
                         id=row["id"],
                         category=JokeCategory(row["category"]),
                         rating=row["rating"],
-                        created_at=row["created_at"],
+                        created_at=row["created_at"] or datetime.now(),
                         steps=steps,
                     )
                 )
@@ -408,7 +408,7 @@ class JokeDatabase:
                         id=row["id"],
                         category=JokeCategory(row["category"]),
                         rating=row["rating"],
-                        created_at=row["created_at"],
+                        created_at=row["created_at"] or datetime.now(),
                         steps=steps,
                     )
                 )

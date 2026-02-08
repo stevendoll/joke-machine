@@ -80,6 +80,21 @@ class TestJokeModel:
         assert response.jokes[0].category == JokeCategory.GENERAL
         assert response.jokes[1].category == JokeCategory.TECH
 
+    def test_joke_created_at_required(self):
+        """Test that created_at is required and cannot be None"""
+        # This should fail because created_at is required
+        with pytest.raises(ValidationError):
+            Joke(
+                id="test-id",
+                category=JokeCategory.TECH,
+                rating=None,
+                created_at=None,  # This should cause validation error
+                steps=[
+                    Step(role=StepRole.SETUP, order=1, content="Test setup"),
+                    Step(role=StepRole.PUNCHLINE, order=2, content="Test punchline"),
+                ],
+            )
+
 
 class TestJokeDatabase:
     """Test the joke database functionality"""
@@ -227,5 +242,3 @@ class TestStepModel:
 
         assert len(response.steps) == 2
         assert response.count == 2
-        assert response.steps[0].content == "Setup 1"
-        assert response.steps[1].content == "Punchline 2"

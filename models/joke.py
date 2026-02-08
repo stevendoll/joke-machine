@@ -56,7 +56,7 @@ class Joke(BaseModel):
     rating: Optional[float] = Field(
         None, ge=0, le=5, description="User rating from 0 to 5"
     )
-    created_at: Optional[datetime] = Field(
+    created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         description="Timestamp when joke was created",
     )
