@@ -83,7 +83,7 @@ class TestJokeModel:
     def test_joke_created_at_required(self):
         """Test that created_at is required and cannot be None"""
         # This should fail because created_at is required
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValidationError) as exc_info:
             Joke(
                 id="test-id",
                 category=JokeCategory.TECH,
@@ -94,6 +94,30 @@ class TestJokeModel:
                     Step(role=StepRole.PUNCHLINE, order=2, content="Test punchline"),
                 ],
             )
+        
+        # Check that the error message mentions datetime validation
+        assert "created_at" in str(exc_info.value)
+        assert "Input should be a valid datetime" in str(exc_info.value)
+
+    def test_joke_invalid_datetime_format(self):
+        """Test that invalid datetime format raises validation error"""
+        # This should fail because created_at is invalid datetime
+        with pytest.raises(ValidationError) as exc_info:
+            Joke(
+                id="test-id",
+                category=JokeCategory.TECH,
+                rating=None,
+                created_at="invalid-datetime",  # Invalid datetime string
+                steps=[
+                    Step(role=StepRole.SETUP, order=1, content="Test setup"),
+                    Step(role=StepRole.PUNCHLINE, order=2, content="Test punchline"),
+                ],
+            )
+        
+        # Check that the error message mentions datetime validation
+        error_str = str(exc_info.value)
+        assert "created_at" in error_str
+        assert "Input should be a valid datetime" in error_str
 
 
 class TestJokeDatabase:
