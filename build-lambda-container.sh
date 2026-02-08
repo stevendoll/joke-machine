@@ -37,19 +37,19 @@ echo "🔐 Logging into ECR..."
 aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
 
 # Build Docker image
-echo "🐳 Building Docker image..."
-docker build -f Dockerfile.aws -t $REPO_NAME:latest .
+echo "� Building Docker image..."
+docker build --platform linux/amd64 -f Dockerfile.aws -t joke-machine .
 
 # Tag image for ECR
 echo "🏷️  Tagging image for ECR..."
-docker tag $REPO_NAME:latest $ECR_REGISTRY/$REPO_NAME:latest
+docker tag joke-machine:latest $ECR_REGISTRY/$REPO_NAME:latest
 
 # Push to ECR
 echo "📤 Pushing to ECR..."
 docker push $ECR_REGISTRY/$REPO_NAME:latest
 
-# Get the latest tag instead of SHA for now
-IMAGE_URI="$ECR_REGISTRY/$REPO_NAME:latest"
+# Get the new digest with permissions fix
+IMAGE_URI="$ECR_REGISTRY/$REPO_NAME@sha256:fd2377fe7222016590a4bb5bf9f56926a39651f5335fce1821ec0646fe1e29af"
 
 # Update CloudFormation template for container
 echo "📋 Creating container template..."

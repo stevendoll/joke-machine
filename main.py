@@ -2,12 +2,17 @@ from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel, Field
 from typing import Dict, Any, Optional
 import json
-import logging
 import os
 
-# Simple logging for both local and Lambda
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# AWS Lambda Powertools
+from aws_lambda_powertools import Logger, Tracer, Metrics
+from aws_lambda_powertools.logging import correlation_paths
+from aws_lambda_powertools.metrics import MetricUnit
+
+# Initialize Powertools
+logger = Logger(service="joke-machine")
+tracer = Tracer(service="joke-machine")
+metrics = Metrics(service="joke-machine")
 
 from database import db
 from models.joke import JokeResponse, joke_db, JokeCategory, Joke
@@ -19,22 +24,29 @@ class RatingRequest(BaseModel):
 app = FastAPI(title="Joke Machine API", version="1.0.0")
 
 @app.get("/")
+@tracer.capture_method
 def root():
     logger.info("Root endpoint accessed")
+    metrics.add_metric("root_requests", unit=MetricUnit.Count, value=1)
     return {"message": "Joke Machine API is running"}
 
 @app.get("/health")
+@tracer.capture_method
 def health_check():
     logger.info("Health endpoint accessed")
+    metrics.add_metric("health_checks", unit=MetricUnit.Count, value=1)
     return {"status": "healthy"}
 
 @app.post("/echo")
+@tracer.capture_method
 def echo_endpoint(data: Dict[str, Any]):
     """Echo endpoint for testing"""
     logger.info(f"Echo endpoint called with: {data}")
+    metrics.add_metric("echo_requests", unit=MetricUnit.Count, value=1)
     return {"received": data, "status": "echoed"}
 
 @app.get("/jokes/{joke_id}")
+@tracer.capture_method
 def get_joke_by_id(joke_id: str):
     """Get a specific joke by ID"""
     try:
@@ -44,18 +56,22 @@ def get_joke_by_id(joke_id: str):
         
         if not joke:
             logger.warning(f"Joke not found: {joke_id}")
+            metrics.add_metric("joke_not_found", unit=MetricUnit.Count, value=1)
             raise HTTPException(status_code=404, detail="Joke not found")
         
         logger.info(f"Found joke: {joke_id}")
+        metrics.add_metric("joke_retrieved", unit=MetricUnit.Count, value=1)
         return joke.model_dump()
         
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error getting joke: {str(e)}")
+        metrics.add_metric("joke_retrieval_error", unit=MetricUnit.Count, value=1)
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.get("/jokes")
+@tracer.capture_method
 def get_jokes(category: Optional[str] = None, limit: Optional[int] = None, offset: int = 0):
     """Get jokes from database with optional category filter and pagination"""
     try:
@@ -76,6 +92,7 @@ def get_jokes(category: Optional[str] = None, limit: Optional[int] = None, offse
                     logger.info(f"Returning {len(filtered_jokes)} filtered jokes")
                     # Apply offset
                     paginated_jokes = filtered_jokes[offset:] if offset > 0 else filtered_jokes
+                    metrics.add_metric("jokes_retrieved", unit=MetricUnit.Count, value=len(paginated_jokes))
                     return JokeResponse(jokes=paginated_jokes, count=len(paginated_jokes))
                 except ValueError:
                     raise HTTPException(status_code=400, detail=f"Invalid category: {category}")
@@ -83,6 +100,7 @@ def get_jokes(category: Optional[str] = None, limit: Optional[int] = None, offse
                 logger.info(f"Returning all {len(all_jokes)} jokes")
                 # Apply offset
                 paginated_jokes = all_jokes[offset:] if offset > 0 else all_jokes
+                metrics.add_metric("jokes_retrieved", unit=MetricUnit.Count, value=len(paginated_jokes))
                 return JokeResponse(jokes=paginated_jokes, count=len(paginated_jokes))
         
         # Validate limit if specified
@@ -111,6 +129,7 @@ def get_jokes(category: Optional[str] = None, limit: Optional[int] = None, offse
             final_jokes = jokes
         
         logger.info(f"Returning {len(final_jokes)} jokes")
+        metrics.add_metric("jokes_retrieved", unit=MetricUnit.Count, value=len(final_jokes))
         
         return JokeResponse(jokes=final_jokes, count=len(final_jokes))
         
@@ -118,9 +137,11 @@ def get_jokes(category: Optional[str] = None, limit: Optional[int] = None, offse
         raise
     except Exception as e:
         logger.error(f"Error getting jokes: {str(e)}")
+        metrics.add_metric("jokes_retrieval_error", unit=MetricUnit.Count, value=1)
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.post("/jokes", response_model=Joke)
+@tracer.capture_method
 def add_joke(joke: Joke):
     """
     Add a new joke to the database
@@ -138,18 +159,22 @@ def add_joke(joke: Joke):
         
         if success:
             logger.info(f"Successfully added joke with ID: {joke.id}")
+            metrics.add_metric("joke_created", unit=MetricUnit.Count, value=1)
             return joke.model_dump()
         else:
             logger.warning(f"Failed to add joke - duplicate ID: {joke.id}")
+            metrics.add_metric("joke_creation_duplicate", unit=MetricUnit.Count, value=1)
             raise HTTPException(status_code=409, detail="Joke with this ID already exists")
             
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error adding joke: {str(e)}")
+        metrics.add_metric("joke_creation_error", unit=MetricUnit.Count, value=1)
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.put("/jokes/{joke_id}/rating")
+@tracer.capture_method
 def rate_joke(joke_id: str, rating_request: RatingRequest):
     """
     Rate a joke
@@ -174,18 +199,22 @@ def rate_joke(joke_id: str, rating_request: RatingRequest):
         
         if success:
             logger.info(f"Successfully rated joke {joke_id}")
+            metrics.add_metric("joke_rated", unit=MetricUnit.Count, value=1)
             return {"message": "Joke rated successfully", "joke_id": joke_id, "rating": rating}
         else:
             logger.warning(f"Joke not found: {joke_id}")
+            metrics.add_metric("joke_rating_not_found", unit=MetricUnit.Count, value=1)
             raise HTTPException(status_code=404, detail="Joke not found")
             
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error rating joke: {str(e)}")
+        metrics.add_metric("joke_rating_error", unit=MetricUnit.Count, value=1)
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.delete("/jokes/{joke_id}")
+@tracer.capture_method
 def delete_joke(joke_id: str):
     """
     Delete a joke
@@ -203,15 +232,18 @@ def delete_joke(joke_id: str):
         
         if success:
             logger.info(f"Successfully deleted joke: {joke_id}")
+            metrics.add_metric("joke_deleted", unit=MetricUnit.Count, value=1)
             return {"message": "Joke deleted successfully", "joke_id": joke_id}
         else:
             logger.warning(f"Joke not found: {joke_id}")
+            metrics.add_metric("joke_deletion_not_found", unit=MetricUnit.Count, value=1)
             raise HTTPException(status_code=404, detail="Joke not found")
             
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error deleting joke: {str(e)}")
+        metrics.add_metric("joke_deletion_error", unit=MetricUnit.Count, value=1)
         raise HTTPException(status_code=500, detail="Internal server error")
 
 if __name__ == "__main__":

@@ -6,13 +6,12 @@ name = "pypi"
 [packages]
 fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
-pydantic = ">=2.0,<3.0"
 python-multipart = "*"
 mangum = "*"
 pytest = "*"
 pytest-asyncio = "*"
 httpx = "*"
-aws-lambda-powertools = "*"
+aws-lambda-powertools = {extras = ["parser"], version = "*"}
 
 [dev-packages]
 

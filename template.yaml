@@ -10,7 +10,6 @@ Globals:
     Environment:
       Variables:
         PYTHONPATH: /var/task
-        AWS_LAMBDA_FUNCTION_NAME: !Ref AWS::StackName
 
 Resources:
   JokeMachineFunction:
@@ -20,7 +19,7 @@ Resources:
       Handler: lambda_handler.handler
       Runtime: python3.14
       Architectures:
-        - x86_64
+        - arm64
       Events:
         Api:
           Type: HttpApi
@@ -37,7 +36,7 @@ Resources:
     Properties:
       LayerName: joke-machine-dependencies
       Description: Dependencies for Joke Machine API
-      ContentUri: dependencies/
+      ContentUri: dependencies.zip
       CompatibleRuntimes:
         - python3.14
 

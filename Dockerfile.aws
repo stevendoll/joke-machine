@@ -10,9 +10,10 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy application code and set permissions
 COPY main.py lambda_handler.py database.py ./
 COPY models/ ./models/
+RUN chmod -R 755 .
 
 # Set CMD to your handler
 CMD [ "lambda_handler.handler" ]
