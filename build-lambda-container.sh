@@ -48,8 +48,8 @@ docker tag joke-machine:latest $ECR_REGISTRY/$REPO_NAME:latest
 echo "📤 Pushing to ECR..."
 docker push $ECR_REGISTRY/$REPO_NAME:latest
 
-# Get the new digest with fixed Mangum handler
-IMAGE_URI="$ECR_REGISTRY/$REPO_NAME@sha256:0ba3a03bfd009034afe4783c290d6188b8d697c37f519edda926be1fd088cbcd"
+# Use the latest image tag (SAM will resolve to the actual digest)
+IMAGE_URI="$ECR_REGISTRY/$REPO_NAME:latest"
 
 # Update CloudFormation template for container
 echo "📋 Creating container template..."
