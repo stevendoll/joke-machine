@@ -13,8 +13,10 @@ pytest-asyncio = "*"
 httpx = "*"
 aws-lambda-powertools = {extras = ["parser"], version = "*"}
 aws-xray-sdk = "*"
+pytest-cov = "*"
 
 [dev-packages]
+pytest-cov = "*"
 
 [scripts]
 local = "uvicorn main:app --reload --host 0.0.0.0 --port 8000"

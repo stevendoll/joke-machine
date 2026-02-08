@@ -4,6 +4,7 @@ python-multipart==0.0.22
 mangum==0.21.0
 pytest==9.0.2
 pytest-asyncio==1.3.0
+pytest-cov==6.0.0
 httpx==0.28.1
 aws-lambda-powertools[parser]==3.24.0
 aws-xray-sdk==2.14.0
