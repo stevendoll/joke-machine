@@ -48,8 +48,8 @@ docker tag joke-machine:latest $ECR_REGISTRY/$REPO_NAME:latest
 echo "📤 Pushing to ECR..."
 docker push $ECR_REGISTRY/$REPO_NAME:latest
 
-# Get the new digest with permissions fix
-IMAGE_URI="$ECR_REGISTRY/$REPO_NAME@sha256:fd2377fe7222016590a4bb5bf9f56926a39651f5335fce1821ec0646fe1e29af"
+# Get the new digest with fixed Mangum handler
+IMAGE_URI="$ECR_REGISTRY/$REPO_NAME@sha256:0ba3a03bfd009034afe4783c290d6188b8d697c37f519edda926be1fd088cbcd"
 
 # Update CloudFormation template for container
 echo "📋 Creating container template..."

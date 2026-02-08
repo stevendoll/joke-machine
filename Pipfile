@@ -12,6 +12,7 @@ pytest = "*"
 pytest-asyncio = "*"
 httpx = "*"
 aws-lambda-powertools = {extras = ["parser"], version = "*"}
+aws-xray-sdk = "*"
 
 [dev-packages]
 
