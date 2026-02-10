@@ -6,7 +6,7 @@ from typing import Dict, Any, Optional
 from aws_lambda_powertools import Logger, Tracer, Metrics
 from aws_lambda_powertools.metrics import MetricUnit
 from database import db
-from models.joke import JokeResponse, JokeCategory, Joke, JokeCreateRequest
+from models.joke import JokeResponse, JokeCategory, Joke, JokeCreateRequest, Step
 
 # Initialize Powertools
 logger = Logger(service="joke-machine")
@@ -177,7 +177,14 @@ def add_joke(joke_request: JokeCreateRequest):
         # Convert request to full Joke object
         joke = Joke(
             category=joke_request.category,
-            steps=joke_request.steps
+            steps=[
+                Step(
+                    role=step_request.role,
+                    order=step_request.order,
+                    content=step_request.content
+                )
+                for step_request in joke_request.steps
+            ]
         )
         
         # Validate that joke has at least one step

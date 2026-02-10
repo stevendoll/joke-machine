@@ -338,17 +338,45 @@ class TestAPI:
         assert "greater than or equal to 1" in error_text or "order" in error_text
 
     def test_add_joke_null_step_order(self):
-        """Test adding a joke with null step order should fail"""
+        """Test adding a joke with null step order gets auto-assigned"""
         new_joke = {
             "category": "science",
             "steps": [
                 {
                     "role": "setup",
-                    "order": None,  # Invalid: order cannot be null
+                    "order": None,  # Will be auto-assigned
                     "content": "Why don't scientists trust atoms?"
                 },
                 {
                     "role": "punchline",
+                    "content": "Because they make up everything!"
+                }
+            ]
+        }
+
+        response = client.post("/jokes", json=new_joke)
+        assert response.status_code == 200  # Should succeed with auto-assigned order
+
+        data = response.json()
+        assert len(data["steps"]) == 2
+        
+        # Check that orders were auto-assigned sequentially
+        orders = [step["order"] for step in data["steps"]]
+        assert orders == [1, 2]  # First step (null order) gets 1, second gets 2
+
+    def test_add_joke_duplicate_step_order(self):
+        """Test adding a joke with duplicate step orders should fail"""
+        new_joke = {
+            "category": "science",
+            "steps": [
+                {
+                    "role": "setup",
+                    "order": 1,  # First step with order 1
+                    "content": "Why don't scientists trust atoms?"
+                },
+                {
+                    "role": "punchline",
+                    "order": 1,  # Duplicate order - should fail
                     "content": "Because they make up everything!"
                 }
             ]
@@ -365,7 +393,44 @@ class TestAPI:
         else:
             error_text = str(error_detail).lower()
         
-        assert "valid integer" in error_text or "order" in error_text
+        assert "duplicate" in error_text or "order" in error_text or "unique" in error_text
+
+    def test_add_joke_auto_assign_sequential_orders(self):
+        """Test that sequential orders are automatically assigned when not provided"""
+        new_joke = {
+            "category": "science",
+            "steps": [
+                {
+                    "role": "setup",
+                    "content": "Why don't scientists trust atoms?"
+                },
+                {
+                    "role": "punchline",
+                    "content": "Because they make up everything!"
+                },
+                {
+                    "role": "bridge",
+                    "content": "It's a matter of trust!"
+                }
+            ]
+        }
+
+        response = client.post("/jokes", json=new_joke)
+        assert response.status_code == 200
+
+        data = response.json()
+        assert data["category"] == new_joke["category"]
+        assert len(data["steps"]) == 3
+        
+        # Check that orders are assigned sequentially (1, 2, 3)
+        orders = [step["order"] for step in data["steps"]]
+        assert orders == [1, 2, 3]
+        
+        # Check that content is preserved
+        contents = [step["content"] for step in data["steps"]]
+        assert "Why don't scientists trust atoms?" in contents
+        assert "Because they make up everything!" in contents
+        assert "It's a matter of trust!" in contents
 
     def test_rate_joke(self):
         """Test rating a joke"""

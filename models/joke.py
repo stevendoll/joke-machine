@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional, List
 from enum import Enum
 from datetime import datetime, timezone
@@ -84,15 +84,53 @@ class JokeRequest(BaseModel):
         return cls(category=None, count=1)
 
 
+class StepRequest(BaseModel):
+    """Step model for requests (without default order)"""
+    model_config = ConfigDict(
+        str_strip_whitespace=True, validate_assignment=True, extra="forbid"
+    )
+
+    role: StepRole = Field(..., description="Role of the step in the joke structure")
+    order: Optional[int] = Field(
+        default=None, ge=1, description="Order of the step in the joke sequence (optional)"
+    )
+    content: str = Field(..., description="Content of the step")
+
+
 class JokeCreateRequest(BaseModel):
     model_config = ConfigDict(
         str_strip_whitespace=True, validate_assignment=True, extra="forbid"
     )
 
     category: JokeCategory = Field(..., description="The category of the joke")
-    steps: List[Step] = Field(
+    steps: List[StepRequest] = Field(
         ..., description="List of steps that make up this joke", min_length=1
     )
+
+    @field_validator('steps')
+    @classmethod
+    def validate_and_assign_orders(cls, v):
+        """Validate steps have unique orders and assign sequential orders if not provided"""
+        if not v:
+            raise ValueError("At least one step is required")
+        
+        # Check for duplicate orders among provided orders
+        provided_orders = [step.order for step in v if step.order is not None]
+        if len(provided_orders) != len(set(provided_orders)):
+            raise ValueError("Step orders must be unique within a joke")
+        
+        # Assign sequential orders starting from 1 for steps without orders
+        next_order = 1
+        # First, assign orders to steps that don't have them
+        for step in v:
+            if step.order is None:
+                # Find the next available order
+                while next_order in provided_orders:
+                    next_order += 1
+                step.order = next_order
+                next_order += 1
+        
+        return v
 
 
 class JokeResponse(BaseModel):
