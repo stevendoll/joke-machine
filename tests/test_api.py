@@ -212,7 +212,19 @@ class TestAPI:
 
     def test_add_joke(self):
         """Test adding a new joke"""
-        new_joke = {"category": "programming"}
+        new_joke = {
+            "category": "programming",
+            "steps": [
+                {
+                    "role": "setup",
+                    "content": "Why do programmers prefer dark mode?"
+                },
+                {
+                    "role": "punchline",
+                    "content": "Because light attracts bugs!"
+                }
+            ]
+        }
 
         response = client.post("/jokes", json=new_joke)
         assert response.status_code == 200
@@ -223,7 +235,19 @@ class TestAPI:
 
     def test_add_joke_duplicate(self):
         """Test adding a duplicate joke (same category)"""
-        new_joke = {"category": "general"}
+        new_joke = {
+            "category": "general",
+            "steps": [
+                {
+                    "role": "setup",
+                    "content": "Why did the scarecrow win an award?"
+                },
+                {
+                    "role": "punchline",
+                    "content": "He was outstanding in his field!"
+                }
+            ]
+        }
 
         # Add the joke first
         response1 = client.post("/jokes", json=new_joke)
@@ -238,6 +262,50 @@ class TestAPI:
         joke2 = response2.json()
         assert joke1["id"] != joke2["id"]
         assert joke1["category"] == joke2["category"]
+
+    def test_add_joke_no_steps(self):
+        """Test adding a joke with no steps should fail"""
+        new_joke = {"category": "programming", "steps": []}
+        
+        response = client.post("/jokes", json=new_joke)
+        assert response.status_code == 422  # Validation error
+        
+        # Check the validation error details
+        error_detail = response.json()["detail"]
+        if isinstance(error_detail, list):
+            # Pydantic returns a list of validation errors
+            error_messages = [str(err.get("msg", "")) for err in error_detail]
+            error_text = " ".join(error_messages).lower()
+        else:
+            error_text = str(error_detail).lower()
+        
+        assert "at least 1 item" in error_text or "min_length" in error_text
+
+    def test_add_joke_with_steps(self):
+        """Test adding a new joke with steps"""
+        new_joke = {
+            "category": "science",
+            "steps": [
+                {
+                    "role": "setup",
+                    "content": "Why don't scientists trust atoms?"
+                },
+                {
+                    "role": "punchline", 
+                    "content": "Because they make up everything!"
+                }
+            ]
+        }
+
+        response = client.post("/jokes", json=new_joke)
+        assert response.status_code == 200
+
+        data = response.json()
+        assert data["category"] == new_joke["category"]
+        assert "id" in data
+        assert len(data["steps"]) == 2
+        assert data["steps"][0]["content"] == "Why don't scientists trust atoms?"
+        assert data["steps"][1]["content"] == "Because they make up everything!"
 
     def test_rate_joke(self):
         """Test rating a joke"""
@@ -278,7 +346,19 @@ class TestAPI:
     def test_delete_joke(self):
         """Test deleting a joke"""
         # First add a joke to delete
-        new_joke = {"category": "general"}
+        new_joke = {
+            "category": "general",
+            "steps": [
+                {
+                    "role": "setup",
+                    "content": "Test setup for deletion"
+                },
+                {
+                    "role": "punchline",
+                    "content": "Test punchline for deletion"
+                }
+            ]
+        }
         response = client.post("/jokes", json=new_joke)
         assert response.status_code == 200
         joke_id = response.json()["id"]

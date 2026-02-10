@@ -6,7 +6,7 @@ from typing import Dict, Any, Optional
 from aws_lambda_powertools import Logger, Tracer, Metrics
 from aws_lambda_powertools.metrics import MetricUnit
 from database import db
-from models.joke import JokeResponse, JokeCategory, Joke
+from models.joke import JokeResponse, JokeCategory, Joke, JokeCreateRequest
 
 # Initialize Powertools
 logger = Logger(service="joke-machine")
@@ -161,18 +161,31 @@ def get_jokes(
 
 @app.post("/jokes", response_model=Joke)
 @tracer.capture_method
-def add_joke(joke: Joke):
+def add_joke(joke_request: JokeCreateRequest):
     """
     Add a new joke to the database
 
     Args:
-        joke: Joke object to add
+        joke_request: JokeCreateRequest object with category and steps
 
     Returns:
         Created joke object
     """
     try:
-        logger.info(f"Adding new joke with category: {joke.category}...")
+        logger.info(f"Adding new joke with category: {joke_request.category}...")
+
+        # Convert request to full Joke object
+        joke = Joke(
+            category=joke_request.category,
+            steps=joke_request.steps
+        )
+        
+        # Validate that joke has at least one step
+        if not joke.steps or len(joke.steps) == 0:
+            raise HTTPException(
+                status_code=422, 
+                detail="Joke must have at least one step"
+            )
 
         success = db.add_joke(joke)
 

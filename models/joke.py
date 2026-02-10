@@ -84,6 +84,17 @@ class JokeRequest(BaseModel):
         return cls(category=None, count=1)
 
 
+class JokeCreateRequest(BaseModel):
+    model_config = ConfigDict(
+        str_strip_whitespace=True, validate_assignment=True, extra="forbid"
+    )
+
+    category: JokeCategory = Field(..., description="The category of the joke")
+    steps: List[Step] = Field(
+        ..., description="List of steps that make up this joke", min_length=1
+    )
+
+
 class JokeResponse(BaseModel):
     model_config = ConfigDict(
         str_strip_whitespace=True, validate_assignment=True, extra="forbid"

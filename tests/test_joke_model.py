@@ -17,7 +17,13 @@ class TestJokeModel:
 
     def test_joke_creation(self):
         """Test creating a valid joke"""
-        joke = Joke(category=JokeCategory.SCIENCE)
+        joke = Joke(
+            category=JokeCategory.SCIENCE,
+            steps=[
+                Step(role=StepRole.SETUP, order=1, content="Why don't scientists trust atoms?"),
+                Step(role=StepRole.PUNCHLINE, order=2, content="Because they make up everything!")
+            ]
+        )
 
         assert joke.category == JokeCategory.SCIENCE
         assert joke.id is not None
@@ -26,7 +32,14 @@ class TestJokeModel:
 
     def test_joke_with_rating(self):
         """Test creating a joke with rating"""
-        joke = Joke(category=JokeCategory.GENERAL, rating=4.5)
+        joke = Joke(
+            category=JokeCategory.GENERAL, 
+            rating=4.5,
+            steps=[
+                Step(role=StepRole.SETUP, order=1, content="Test setup"),
+                Step(role=StepRole.PUNCHLINE, order=2, content="Test punchline")
+            ]
+        )
 
         assert joke.category == JokeCategory.GENERAL
         assert joke.rating == 4.5
@@ -71,7 +84,16 @@ class TestJokeModel:
 
     def test_joke_response(self):
         """Test joke response creation"""
-        jokes = [Joke(category=JokeCategory.GENERAL), Joke(category=JokeCategory.TECH)]
+        jokes = [
+            Joke(
+                category=JokeCategory.GENERAL,
+                steps=[Step(role=StepRole.SETUP, order=1, content="Test setup 1")]
+            ),
+            Joke(
+                category=JokeCategory.TECH,
+                steps=[Step(role=StepRole.SETUP, order=1, content="Test setup 2")]
+            )
+        ]
 
         response = JokeResponse(jokes=jokes, count=2)
 
