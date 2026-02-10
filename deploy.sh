@@ -44,12 +44,15 @@ docker build --platform linux/amd64 -f Dockerfile.aws -t joke-machine .
 echo "🏷️  Tagging image for ECR..."
 docker tag joke-machine:latest $ECR_REGISTRY/$REPO_NAME:latest
 
-# Push to ECR
+# Push to ECR with explicit platform (single-arch manifest)
 echo "📤 Pushing to ECR..."
-docker push $ECR_REGISTRY/$REPO_NAME:latest
+docker push --platform linux/amd64 $ECR_REGISTRY/$REPO_NAME:latest
 
-# Use the latest image tag (SAM will resolve to the actual digest)
-IMAGE_URI="$ECR_REGISTRY/$REPO_NAME:latest"
+# Get the actual image digest (Lambda requires SHA, not tag)
+echo "🔍 Getting image digest..."
+IMAGE_DIGEST=$(aws ecr describe-images --repository-name $REPO_NAME --image-ids imageTag=latest --query 'imageDetails[0].imageDigest' --output text)
+IMAGE_URI="$ECR_REGISTRY/$REPO_NAME@$IMAGE_DIGEST"
+echo "📍 Using image URI: $IMAGE_URI"
 
 # Update CloudFormation template for container
 echo "📋 Creating container template..."
@@ -85,10 +88,6 @@ Outputs:
     Description: "Lambda Function Name"
     Value: !Ref JokeMachineFunction
 EOF
-
-# Build container with SAM
-echo "🔨 Building with SAM..."
-sam build
 
 # Deploy container
 echo "🚀 Deploying Lambda container..."
