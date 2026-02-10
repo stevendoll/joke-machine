@@ -78,14 +78,14 @@ class JokeDatabase:
             if count == 0:
                 # Sample jokes with steps
                 sample_jokes = [
-                    (str(uuid.uuid4()), "science", None, None),
-                    (str(uuid.uuid4()), "general", None, None),
-                    (str(uuid.uuid4()), "food", None, None),
-                    (str(uuid.uuid4()), "general", None, None),
-                    (str(uuid.uuid4()), "programming", None, None),
-                    (str(uuid.uuid4()), "programming", None, None),
-                    (str(uuid.uuid4()), "programming", None, None),
-                    (str(uuid.uuid4()), "tech", None, None),
+                    (str(uuid.uuid4()), "science", None, datetime.now(timezone.utc)),
+                    (str(uuid.uuid4()), "general", None, datetime.now(timezone.utc)),
+                    (str(uuid.uuid4()), "food", None, datetime.now(timezone.utc)),
+                    (str(uuid.uuid4()), "general", None, datetime.now(timezone.utc)),
+                    (str(uuid.uuid4()), "programming", None, datetime.now(timezone.utc)),
+                    (str(uuid.uuid4()), "programming", None, datetime.now(timezone.utc)),
+                    (str(uuid.uuid4()), "programming", None, datetime.now(timezone.utc)),
+                    (str(uuid.uuid4()), "tech", None, datetime.now(timezone.utc)),
                 ]
 
                 # Insert jokes first
