@@ -231,6 +231,54 @@ class TestJokeEnums:
 class TestStepModel:
     """Test the Step model"""
 
+    def test_step_order_required_integer(self):
+        """Test that step order must be a non-null integer"""
+        # Test with null order - should fail
+        with pytest.raises(ValidationError) as exc_info:
+            Step(role=StepRole.SETUP, order=None, content="Test content")
+        
+        error_str = str(exc_info.value)
+        assert "order" in error_str
+        assert "Input should be a valid integer" in error_str
+
+        # Test with string order - should fail
+        with pytest.raises(ValidationError) as exc_info:
+            Step(role=StepRole.SETUP, order="first", content="Test content")
+        
+        error_str = str(exc_info.value)
+        assert "order" in error_str
+        assert "Input should be a valid integer" in error_str
+
+        # Test with negative order - should fail
+        with pytest.raises(ValidationError) as exc_info:
+            Step(role=StepRole.SETUP, order=-1, content="Test content")
+        
+        error_str = str(exc_info.value)
+        assert "order" in error_str
+        assert "Input should be greater than or equal to 1" in error_str
+
+        # Test with zero order - should fail
+        with pytest.raises(ValidationError) as exc_info:
+            Step(role=StepRole.SETUP, order=0, content="Test content")
+        
+        error_str = str(exc_info.value)
+        assert "order" in error_str
+        assert "Input should be greater than or equal to 1" in error_str
+
+    def test_step_order_valid(self):
+        """Test that valid integer orders work correctly"""
+        # Test with valid positive integer
+        step = Step(role=StepRole.SETUP, order=1, content="Test content")
+        assert step.order == 1
+
+        # Test with another valid positive integer
+        step2 = Step(role=StepRole.PUNCHLINE, order=2, content="Test punchline")
+        assert step2.order == 2
+
+        # Test with default order (should be 1)
+        step3 = Step(role=StepRole.SETUP, content="Test content with default order")
+        assert step3.order == 1
+
     def test_step_creation(self):
         """Test creating a valid step"""
         step = Step(

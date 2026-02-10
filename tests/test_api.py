@@ -307,6 +307,66 @@ class TestAPI:
         assert data["steps"][0]["content"] == "Why don't scientists trust atoms?"
         assert data["steps"][1]["content"] == "Because they make up everything!"
 
+    def test_add_joke_invalid_step_order(self):
+        """Test adding a joke with invalid step order should fail"""
+        new_joke = {
+            "category": "science",
+            "steps": [
+                {
+                    "role": "setup",
+                    "content": "Why don't scientists trust atoms?"
+                },
+                {
+                    "role": "punchline",
+                    "order": 0,  # Invalid: order must be >= 1
+                    "content": "Because they make up everything!"
+                }
+            ]
+        }
+
+        response = client.post("/jokes", json=new_joke)
+        assert response.status_code == 422  # Validation error
+        
+        # Check the validation error details
+        error_detail = response.json()["detail"]
+        if isinstance(error_detail, list):
+            error_messages = [str(err.get("msg", "")) for err in error_detail]
+            error_text = " ".join(error_messages).lower()
+        else:
+            error_text = str(error_detail).lower()
+        
+        assert "greater than or equal to 1" in error_text or "order" in error_text
+
+    def test_add_joke_null_step_order(self):
+        """Test adding a joke with null step order should fail"""
+        new_joke = {
+            "category": "science",
+            "steps": [
+                {
+                    "role": "setup",
+                    "order": None,  # Invalid: order cannot be null
+                    "content": "Why don't scientists trust atoms?"
+                },
+                {
+                    "role": "punchline",
+                    "content": "Because they make up everything!"
+                }
+            ]
+        }
+
+        response = client.post("/jokes", json=new_joke)
+        assert response.status_code == 422  # Validation error
+        
+        # Check the validation error details
+        error_detail = response.json()["detail"]
+        if isinstance(error_detail, list):
+            error_messages = [str(err.get("msg", "")) for err in error_detail]
+            error_text = " ".join(error_messages).lower()
+        else:
+            error_text = str(error_detail).lower()
+        
+        assert "valid integer" in error_text or "order" in error_text
+
     def test_rate_joke(self):
         """Test rating a joke"""
         # First get a joke to rate
