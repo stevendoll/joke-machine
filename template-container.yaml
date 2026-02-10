@@ -19,7 +19,7 @@ Resources:
         - CloudWatchLogsFullAccess
       Timeout: 30
       MemorySize: 512
-      ImageUri: 600775874112.dkr.ecr.us-east-1.amazonaws.com/joke-machine@sha256:7ed182cf7bd555f8ca2ed7ad8537cec9a51d4609e02e1d23aaa6931c0dd0c1f3
+      ImageUri: 600775874112.dkr.ecr.us-east-1.amazonaws.com/joke-machine:latest
 
 Outputs:
   ApiUrl:

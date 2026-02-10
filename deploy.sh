@@ -36,18 +36,69 @@ aws ecr describe-repositories --repository-names $REPO_NAME --region $REGION > /
 echo "🔐 Logging into ECR..."
 aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
 
-# Build and deploy with SAM (handles container images correctly)
-echo "� Building with SAM..."
-sam build --use-container
+# Build Docker image
+echo "� Building Docker image..."
+docker build --platform linux/amd64 -f Dockerfile.aws -t joke-machine .
 
-# Deploy with SAM
+# Tag image for ECR
+echo "🏷️  Tagging image for ECR..."
+docker tag joke-machine:latest $ECR_REGISTRY/$REPO_NAME:latest
+
+# Push to ECR
+echo "📤 Pushing to ECR..."
+docker push $ECR_REGISTRY/$REPO_NAME:latest
+
+# Use the latest image tag (SAM will resolve to the actual digest)
+IMAGE_URI="$ECR_REGISTRY/$REPO_NAME:latest"
+
+# Update CloudFormation template for container
+echo "📋 Creating container template..."
+cat > template-container.yaml << EOF
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Joke Machine API using Lambda Container'
+
+Resources:
+  JokeMachineFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Policies:
+        - CloudWatchLogsFullAccess
+      Timeout: 30
+      MemorySize: 512
+      ImageUri: $IMAGE_URI
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://\${ServerlessHttpApi}.execute-api.\${AWS::Region}.amazonaws.com/"
+  FunctionName:
+    Description: "Lambda Function Name"
+    Value: !Ref JokeMachineFunction
+EOF
+
+# Build container with SAM
+echo "🔨 Building with SAM..."
+sam build
+
+# Deploy container
 echo "🚀 Deploying Lambda container..."
 sam deploy \
+    --template-file template-container.yaml \
     --stack-name joke-machine-container \
     --capabilities CAPABILITY_IAM \
     --region $REGION \
     --image-repository $ECR_REGISTRY/$REPO_NAME \
-    --no-confirm-changeset
+    --parameter-overrides ParameterKey=Runtime,ParameterValue=python3.14
 
 # Get API URL
 echo "🌐 Getting API URL..."
